@@ -6,98 +6,98 @@ const webamp = new Webamp({
           "artist": "Soulja Boy",
           "title": "Intro"
         },
-        "url": "https://git.prigoana.com/assets/music/01-soulja_boy-intro.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/01-soulja_boy-intro.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Crank That (Soulja Boy)"
         },
-        "url": "https://git.prigoana.com/assets/music/02-soulja_boy-crank_that_(soulja_boy).flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/02-soulja_boy-crank_that_(soulja_boy).flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Sidekick"
         },
-        "url": "https://git.prigoana.com/assets/music/03-soulja_boy-sidekick.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/03-soulja_boy-sidekick.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Snap and Roll"
         },
-        "url": "https://git.prigoana.com/assets/music/04-soulja_boy-snap_and_roll.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/04-soulja_boy-snap_and_roll.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Bapes (Feat. Arab)"
         },
-        "url": "https://git.prigoana.com/assets/music/05-soulja_boy-bapes_(feat._arab).flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/05-soulja_boy-bapes_(feat._arab).flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Let Me Get Em"
         },
-        "url": "https://git.prigoana.com/assets/music/06-soulja_boy-let_me_get_em.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/06-soulja_boy-let_me_get_em.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Donk"
         },
-        "url": "https://git.prigoana.com/assets/music/07-soulja_boy-donk.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/07-soulja_boy-donk.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Yahhh"
         },
-        "url": "https://git.prigoana.com/assets/music/08-soulja_boy-yahhh.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/08-soulja_boy-yahhh.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Pass it to Arab (feat. Arab)"
         },
-        "url": "https://git.prigoana.com/assets/music/09-soulja_boy-pass_it_to_arab_(feat._arab).flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/09-soulja_boy-pass_it_to_arab_(feat._arab).flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Soulja Girl (feat I-15)"
         },
-        "url": "https://git.prigoana.com/assets/music/10-soulja_boy-soulja_girl_(feat._i-15).flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/10-soulja_boy-soulja_girl_(feat._i-15).flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Booty Meat"
         },
-        "url": "https://git.prigoana.com/assets/music/11-soulja_boy-booty_meat.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/11-soulja_boy-booty_meat.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Report Card"
         },
-        "url": "https://git.prigoana.com/assets/music/12-soulja_boy-report_card.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/12-soulja_boy-report_card.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "She Thirsty"
         },
-        "url": "https://git.prigoana.com/assets/music/13-soulja_boy-she_thirsty.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/13-soulja_boy-she_thirsty.flac"
       },
       {
         "metaData": {
           "artist": "Soulja Boy",
           "title": "Dont Get Mad"
         },
-        "url": "https://git.prigoana.com/assets/music/14-soulja_boy-dont_get_mad.flac"
+        "url": "https://eduardprigoanaalt.github.io/souljaboytellem/14-soulja_boy-dont_get_mad.flac"
       },
     ],
   initialSkin: {
