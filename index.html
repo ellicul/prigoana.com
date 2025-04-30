@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ASCII models</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <button id="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    <h1>Prigoana.com</h1>
+    <p>Last played song:</p>
+    <div id="now-playing">Loading...</div>
+    <a href="https://instagram.com/edideaur">
+      <p>Make sure y'all follow me on instagram</p>
+    </a>
+    <h2>Services</h2>
+    <ul>
+      <li>
+        <a href="https://mount.prigoana.com/index.html"> Web drive with over 300 GB of drum kits, loop kits and presets (webUI and WebDAV) </a>
+      </li>
+      <li>
+        <a href="https://m3u.prigoana.com">M3U IPTV playlist with over 100,000 individual channels</a>
+      </li>
+      <li>
+        <a href="https://fin.prigoana.com">Jellyfin Instance</a>
+      </li>
+      <li>
+        <a href="https://git.prigoana.com">Git Service</a>
+      </li>
+    </ul>
+    <h2>Guides</h2>
+    <details>
+      <summary>Ad Blocking</summary>
+      <p> Browsers: install <a href="https://ublockorigin.com/">uBlock Origin</a> or <a href="https://github.com/uBlockOrigin/uBOL-home">uBO lite</a>
+        <br> iOS: sideload <a href="https://spotc.yodaluca.dev/">SpotC++</a>
+        <br> All Devices: use a DNS blocker like nextdns. You can find mine <a href="https://dns.prigoana.com/">here</a>. It blocks requests before they get on your device.
+      </p>
+    </details>
+    <details>
+      <summary>Cracked Spotify</summary>
+      <p> Android: install <a href="https://github.com/Team-xManager/xManager">xManager</a>
+        <br> iOS: install <a href="https://adguard.com/en/adguard-ios/overview.html?source=ag_products_page">AdGuard</a>
+        <br> Windows: install <a href="https://github.com/SpotX-Official/SpotX">SpotX</a> Linux/Mac: install <a href="https://github.com/SpotX-Official/SpotX-Bash">SpotX Bash</a> Browser: Follow the guide above
+      </p>
+    </details>
+    <div id="overlay">Click to begin</div>
+    <h2>Links</h2>
+    <ul>
+      <li>
+        <a href="https://fmhy.net">FMHY</a>
+      </li>
+    </ul>
+    <audio id="bg-audio" autoplay muted loop></audio>
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(() => console.log('Service Worker registered'))
+            .catch(err => console.error('Service Worker registration failed:', err));
+        }
+      </script>
+      
+  </body>
+</html>
