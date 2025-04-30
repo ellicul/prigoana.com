@@ -65,4 +65,60 @@
     color: var(--fg);
     text-decoration: none;
   }
-  
+  /* Responsive tweaks */
+body {
+  padding: 10px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Make lists and content adapt to screen width */
+ul, p, h1, h2 {
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+/* Ensure overlay scales well */
+#overlay {
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Responsive theme toggle button */
+#theme-toggle {
+  padding: 8px 12px;
+  font-size: 1rem;
+}
+
+/* Responsive audio player */
+audio {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Media Query: Small screens (phones) */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1, h2, h3, h4 {
+    font-size: 1.2em;
+  }
+
+  #theme-toggle {
+    top: 8px;
+    right: 8px;
+    padding: 6px 10px;
+  }
+
+  #overlay {
+    font-size: 1.2rem;
+    padding: 2rem;
+  }
+
+  a {
+    word-break: break-word;
+  }
+}
