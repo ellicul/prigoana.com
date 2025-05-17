@@ -3,8 +3,8 @@ function toggleTheme() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	const overlay = document.getElementById("overlay");
 	const audio = document.getElementById("bg-audio");
+	const playToggle = document.getElementById("play-toggle");
 
 	const allSongs = [
 		"song1.mp3", "song2.flac", "song3.flac", "song4.flac", "song5.flac",
@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	];
 
 	let songBag = [];
+	let isPlaying = false;
+	let initialized = false;
 
+	// Function to shuffle and refill the song bag
 	function refillBag() {
 		songBag = [...allSongs];
 		for (let i = songBag.length - 1; i > 0; i--) {
@@ -22,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
+	// Function to play the next song
 	function playNextSong() {
 		if (songBag.length === 0) refillBag();
 		const nextSong = songBag.pop();
@@ -29,16 +33,33 @@ document.addEventListener("DOMContentLoaded", () => {
 		audio.play().catch(err => console.error("Audio play error:", err));
 	}
 
-	overlay.addEventListener("click", () => {
-		overlay.style.display = "none";
-		audio.muted = false;
-		playNextSong();
+	// Play/Pause button click event
+	playToggle.addEventListener("click", () => {
+		if (!initialized) {
+			// Start playing the audio for the first time
+			audio.muted = false;
+			refillBag();
+			playNextSong();
+			initialized = true;
+			isPlaying = true;
+			playToggle.textContent = "Pause";
+		} else {
+			// Toggle play and pause
+			if (isPlaying) {
+				audio.pause(); // Pause the audio
+				playToggle.textContent = "Play";
+			} else {
+				audio.play().catch(err => console.error("Audio resume error:", err)); // Play the audio
+				playToggle.textContent = "Pause";
+			}
+			isPlaying = !isPlaying;
+		}
 	});
 
+	// When the song ends, play the next song
 	audio.addEventListener("ended", playNextSong);
 
-	refillBag();
-
+	// Fetch the currently playing track info
 	fetch("https://lastplayed.prigoana.com/eduardprigoana/")
 		.then(response => response.json())
 		.then(data => {
@@ -50,18 +71,20 @@ document.addEventListener("DOMContentLoaded", () => {
 			const url = track.url;
 
 			document.getElementById("now-playing").innerHTML = `
-        <a href="${url}">
-          <p><strong>${name}</strong> by <strong>${artist}</strong></p>
-          <p><strong>${album}</strong></p>
-          ${image ? `<img src="${image}" alt="${name}" style="max-width:150px;">` : ""}
-        </a>
-      `;
+				<a href="${url}">
+					<p><strong>${name}</strong> by <strong>${artist}</strong></p>
+					<p><strong>${album}</strong></p>
+					${image ? `<img src="${image}" alt="${name}" style="max-width:150px;">` : ""}
+				</a>
+			`;
 		})
 		.catch(error => {
 			document.getElementById("now-playing").textContent = "Could not load now playing info.";
 			console.error("Now playing fetch error:", error);
 		});
 });
+
+
 const instructions = {
 	android: `
 	  <h2>Android</h2>

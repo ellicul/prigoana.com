@@ -1,55 +1,70 @@
 :root {
     --bg: #000000;
     --fg: #ffffff;
-  }
-  
-  body.dark {
+}
+
+body.dark {
     --bg: #ffffff;
     --fg: #000000;
-  }
-  
-  body {
+}
+
+body {
     background-color: var(--bg);
     color: var(--fg);
     font-family: monospace;
     padding: 20px;
     transition: background-color 0.3s, color 0.3s;
-  }
-  
-  a {
+}
+
+a {
     color: var(--fg);
     text-decoration: underline;
-  }
-  
-  #theme-toggle {
+}
+
+#theme-toggle,
+#play-toggle {
     position: fixed;
     top: 10px;
-    right: 10px;
     background: var(--bg);
     color: var(--fg);
     border: 1px solid var(--fg);
-    padding: 4px 8px;
+    padding: 6px 12px;  /* Consistent padding for both buttons */
     font-family: monospace;
     cursor: pointer;
-  }
-  
-  select {
+    height: 40px; /* Ensuring consistent height */
+    line-height: 28px; /* Vertically center the text */
+    font-size: 1rem;
+}
+
+#theme-toggle {
+    right: 10px;
+}
+
+#play-toggle {
+    right: 160px;
+}
+
+#theme-toggle, #play-toggle {
+    display: inline-block;
+}
+
+select {
     font-family: monospace;
     background-color: var(--bg);
     color: var(--fg);
     border: 1px solid var(--fg);
     padding: 4px;
-  }
-  
-  h1,
-  h2,
-  h3,
-  h4 {
+}
+
+h1,
+h2,
+h3,
+h4 {
     border-bottom: 1px solid var(--fg);
     padding-bottom: 2px;
-  }
-  
-  #overlay {
+}
+
+#overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -60,65 +75,77 @@
     align-items: center;
     justify-content: center;
     z-index: 9999;
-  }
-  #now-playing a {
+}
+
+#now-playing a {
     color: var(--fg);
     text-decoration: none;
-  }
-  /* Responsive tweaks */
+}
+
+/* Responsive tweaks */
 body {
-  padding: 10px;
-  font-size: 16px;
-  line-height: 1.5;
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 /* Make lists and content adapt to screen width */
 ul, p, h1, h2 {
-  max-width: 100%;
-  word-wrap: break-word;
+    max-width: 100%;
+    word-wrap: break-word;
 }
 
 /* Ensure overlay scales well */
 #overlay {
-  font-size: 1.5rem;
-  text-align: center;
-  padding: 1rem;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 1rem;
 }
 
 /* Responsive theme toggle button */
-#theme-toggle {
-  padding: 8px 12px;
-  font-size: 1rem;
+#theme-toggle,
+#play-toggle {
+    font-size: 1rem;
 }
 
 /* Responsive audio player */
 audio {
-  width: 100%;
-  max-width: 400px;
+    width: 100%;
+    max-width: 400px;
 }
 
 /* Media Query: Small screens (phones) */
 @media (max-width: 600px) {
-  body {
-    font-size: 14px;
-  }
+    body {
+        font-size: 14px;
+    }
 
-  h1, h2, h3, h4 {
-    font-size: 1.2em;
-  }
+    h1, h2, h3, h4 {
+        font-size: 1.2em;
+    }
 
-  #theme-toggle {
-    top: 8px;
-    right: 8px;
-    padding: 6px 10px;
-  }
+    #theme-toggle,
+    #play-toggle {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        height: 36px; /* Slightly smaller height on smaller screens */
+        line-height: 24px; /* Adjust text vertical alignment */
+    }
 
-  #overlay {
-    font-size: 1.2rem;
-    padding: 2rem;
-  }
+    #theme-toggle {
+        right: 8px;
+    }
 
-  a {
-    word-break: break-word;
-  }
+    #play-toggle {
+        right: 58px; /* Adjust spacing based on smaller screens */
+    }
+
+    #overlay {
+        font-size: 1.2rem;
+        padding: 2rem;
+    }
+
+    a {
+        word-break: break-word;
+    }
 }
