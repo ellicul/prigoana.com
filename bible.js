@@ -10,6 +10,11 @@ const verses = [
     url: "https://www.biblegateway.com/passage/?search=Psalm+23%3A1"
   },
   {
+    ref: "Santeria 0:15",
+    text: "The Lord is my shepherd; I am not sheep.",
+    url: "https://www.youtube.com/watch?v=RMhIC6195KU&t=15s"
+  },
+  {
     ref: "Philippians 4:13",
     text: "I can do all things through Christ who strengthens me.",
     url: "https://www.biblegateway.com/passage/?search=Philippians+4%3A13"
