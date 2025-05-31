@@ -86,14 +86,19 @@ fetch("https://lastplayed.prigoana.com/eduardprigoana/")
             const minutes = diffMins % 60;
 
             const formattedTime = playedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            playedInfo = `<p>at ${formattedTime}, ${hours} hour${hours !== 1 ? 's' : ''} and ${minutes} minute${minutes !== 1 ? 's' : ''} ago</p>`;
+
+            if (hours === 0) {
+                playedInfo = `<p>at ${formattedTime}, ${minutes} minute${minutes !== 1 ? 's' : ''} ago</p>`;
+            } else {
+                playedInfo = `<p>at ${formattedTime}, ${hours} hour${hours !== 1 ? 's' : ''} and ${minutes} minute${minutes !== 1 ? 's' : ''} ago</p>`;
+            }
         }
 
         document.getElementById("now-playing").innerHTML = `
             <a href="${url}">
                 <p><strong>${name}</strong> by <strong>${artist}</strong></p>
                 <p><strong>${album}</strong></p>
-                ${image ? `<img src="${image}" alt="${name}" style="max-width:150px;">` : ""}
+                ${image ? `<img src="${image}" alt="${name}" style="max-width:235px;">` : ""}
                 ${playedInfo}
             </a>
         `;
