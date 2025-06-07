@@ -80,6 +80,7 @@ h4 {
 #now-playing a {
     color: var(--fg);
     text-decoration: none;
+      transition: opacity 0.3s ease;
 }
 
 /* Responsive tweaks */
