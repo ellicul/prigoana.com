@@ -11,9 +11,13 @@ function formatTimeAgo(uts) {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    const formattedTime = playedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formattedTime = playedDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
 
-    let timeAgo = `at ${formattedTime}, `;
+    let timeAgo = `at ${formattedTime} EET, `;
 
     if (hours > 0) {
         timeAgo += `${hours} hour${hours !== 1 ? 's' : ''}, `;
@@ -26,6 +30,7 @@ function formatTimeAgo(uts) {
 
     return `<p>${timeAgo}</p>`;
 }
+
 
 function updateTimer() {
     if (!lastUts) return;
