@@ -10,7 +10,7 @@ async function fetchVisitorCount() {
     const count = data.count;
     document.getElementById("visitor-count").textContent = `You're visitor no. ${count}`;
   } catch (error) {
-    document.getElementById("visitor-count").textContent = "Failed to load visitor count.";
+    document.getElementById("visitor-count").textContent = "";
     console.error("Error fetching visitor count:", error);
   }
 }
