@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function playSongFromKey(key) {
         console.log("Now playing:", key);
         try {
-            const response = await fetch(`https://qobuz.prigoana.com/search/${encodeURIComponent(key)}`);
+            const response = await fetch(`https://qobuz.prigoana.com/search/${encodeURIComponent(key)}/quality/5`);
             if (!response.ok) throw new Error("Track fetch failed");
 
             const data = await response.json();
@@ -58,6 +58,42 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Fetch the newest track info from last.fm and play it, updating metadata
+    async function fetchAndPlayLatestTrack() {
+        try {
+            const response = await fetch("https://lastplayed.prigoana.com/eduardprigoana/");
+            if (!response.ok) throw new Error("Failed to fetch now playing track");
+            
+            const data = await response.json();
+            const track = data.track;
+            const trackKey = [...track.artist["#text"].split(' '), ...track.name.split(' ')].join('+');
+            if (!trackKey) throw new Error("No valid track key from data");
+            
+            // Update globals
+            window.lastTrackKey = trackKey;
+            window.currentTrackInfo = {
+                name: track.name,
+                artist: track.artist["#text"],
+                album: track.album["#text"],
+                image: track.image.find(img => img.size === "extralarge")?.["#text"] || "",
+                url: track.url
+            };
+            
+            // Update media session metadata
+            updateMediaSessionMetadataFromCurrentTrack();
+            
+            // Play the track
+            await playSongFromKey(trackKey);
+        } catch (err) {
+            console.error("Error fetching and playing latest track:", err);
+            // fallback: replay last known track
+            if (window.lastTrackKey) {
+                await playSongFromKey(window.lastTrackKey);
+                updateMediaSessionMetadataFromCurrentTrack();
+            }
+        }
+    }
+
     // Handlers for media session actions
     function setupMediaSessionHandlers() {
         if (!('mediaSession' in navigator)) return;
@@ -92,13 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         navigator.mediaSession.setActionHandler('nexttrack', () => {
-            if (!window.lastTrackKey) {
-                console.warn("No lastTrackKey available for next track");
-                return;
-            }
-            playSongFromKey(window.lastTrackKey).then(() => {
-                updateMediaSessionMetadataFromCurrentTrack();
-            });
+            // Play the newest track again
+            fetchAndPlayLatestTrack();
         });
     }
 
@@ -110,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!initialized) {
             audio.muted = false;
-            playSongFromKey(lastTrackKey);
+            fetchAndPlayLatestTrack();
             initialized = true;
             isPlaying = true;
             playToggle.textContent = "Pause";
@@ -128,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 // Check if lastTrackKey has changed
                 if (lastTrackKey !== currentTrackKey) {
-                    playSongFromKey(lastTrackKey);
+                    fetchAndPlayLatestTrack();
                 } else {
                     audio.play().catch(err => console.error("Audio resume error:", err));
                 }
@@ -142,8 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audio.addEventListener("ended", () => {
-        // Auto replay same track for now
-        playSongFromKey(lastTrackKey);
+        fetchAndPlayLatestTrack();
     });
 
     audio.addEventListener("play", () => {
