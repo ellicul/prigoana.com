@@ -84,13 +84,39 @@ function fetchNowPlaying() {
                     </a>
                 `;
                 nowPlaying.style.opacity = 1;
+
+                // Media Session API integration
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: name,
+                        artist: artist,
+                        album: album,
+                        artwork: image ? [
+                            { src: image, sizes: '300x300', type: 'image/png' }
+                        ] : []
+                    });
+
+                    // Optional: action handlers for play/pause
+                    navigator.mediaSession.setActionHandler('play', () => {
+                        const audio = document.getElementById("bg-audio");
+                        audio.play().catch(err => console.error("Audio play error:", err));
+                    });
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                        const audio = document.getElementById("bg-audio");
+                        audio.pause();
+                    });
+
+                    // You can add nexttrack and previoustrack handlers if desired
+                    // navigator.mediaSession.setActionHandler('nexttrack', () => { ... });
+                    // navigator.mediaSession.setActionHandler('previoustrack', () => { ... });
+                }
             };
 
             if (image) {
                 const img = new Image();
                 img.src = image;
                 img.onload = () => setTimeout(updateDOM, 300);
-                img.onerror = () => setTimeout(updateDOM, 300); // fallback on error
+                img.onerror = () => setTimeout(updateDOM, 300);
             } else {
                 setTimeout(updateDOM, 300);
             }
