@@ -78,10 +78,9 @@ function fetchNowPlaying() {
             if (trackId === lastTrackId) return;
 
             lastTrackId = trackId;
-            lastTrackKey = trackKey;  // Update here every time song changes
+            lastTrackKey = trackKey;
             lastUts = uts;
 
-            // Expose lastTrackKey globally for music.js
             window.lastTrackKey = lastTrackKey;
 
             const name = track.name;
@@ -90,7 +89,6 @@ function fetchNowPlaying() {
             const image = track.image.find(img => img.size === "extralarge")?.["#text"] || "";
             const url = track.url;
 
-            // Expose current track info globally for music.js metadata update
             window.currentTrackInfo = {
                 name,
                 artist,
@@ -103,13 +101,19 @@ function fetchNowPlaying() {
             nowPlaying.style.opacity = 0;
 
             const updateDOM = () => {
+                const artistUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}`;
+                const albumUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`;
+
                 nowPlaying.innerHTML = `
-                    <a href="${url}">
-                        <p><strong>${name}</strong> by <strong>${artist}</strong></p>
-                        <p><strong>${album}</strong></p>
-                        ${image ? `<img src="${image}" alt="${name}" style="max-width:235px;">` : ""}
-                        <div class="played-info">${uts ? formatTimeAgo(uts) : "<p><em>Now playing</em></p>"}</div>
-                    </a>
+                    <p>
+                        <a href="${url}" target="_blank"><strong>${name}</strong></a> by 
+                        <a href="${artistUrl}" target="_blank"><strong>${artist}</strong></a>
+                    </p>
+                    <p>
+                        <a href="${albumUrl}" target="_blank"><strong>${album}</strong></a>
+                    </p>
+                    ${image ? `<a href="${albumUrl}" target="_blank"><img src="${image}" alt="${name}" style="max-width:235px;"></a>` : ""}
+                    <div class="played-info">${uts ? formatTimeAgo(uts) : "<p><em>Now playing</em></p>"}</div>
                 `;
                 nowPlaying.style.opacity = 1;
 
