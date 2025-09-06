@@ -111,7 +111,6 @@ function getRandomVerse() {
   return verses[randomIndex];
 }
 
-// Example usage: display in console or update HTML elements
 const verse = getRandomVerse();
 console.log(`${verse.ref}: "${verse.text}"`);
 console.log(`More info: ${verse.url}`);

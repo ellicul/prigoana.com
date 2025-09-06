@@ -9,7 +9,7 @@ const instructions = {
 	`,
 	ios: `
 	  <h2>iOS</h2>
-	  <p>Use the <a href="https://apple.nextdns.io" target="_blank">Apple Configuration Profile Generator</a>.</p>
+	  <p>Install the <a href="https://prigoana.com/dns">Configuration Profile</a>.</p>
 	  <h3>Using the NextDNS App</h3>
 	  <ul>
 		<li>Install the <strong>NextDNS app</strong> from the App Store.</li>

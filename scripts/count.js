@@ -1,4 +1,3 @@
-// URL of the count API
 const apiUrl = "https://121124.prigoana.com/prigoana.com/";
 
 async function fetchVisitorCount() {

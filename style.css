@@ -1,69 +1,45 @@
-:root {
-    --bg: #ffffff;
-    --fg: #000000;
-}
-
-body.dark {
-    --bg: #000000;
-    --fg: #ffffff;
-}
-
 body {
-    background-color: var(--bg);
-    color: var(--fg);
+    background-color: #000000;
+    color: #ffffff;
     font-family: monospace;
     padding: 20px;
-    transition: background-color 0.3s, color 0.3s;
+    font-size: 16px;
+    line-height: 1.5;
 }
-
 a {
-    color: var(--fg);
+    color: #ffffff;
     text-decoration: underline;
 }
-
-#theme-toggle,
-#play-toggle {
-    position: fixed;
-    top: 10px;
-    background: var(--bg);
-    color: var(--fg);
-    border: 1px solid var(--fg);
-    padding: 6px 12px;  /* Consistent padding for both buttons */
-    font-family: monospace;
-    cursor: pointer;
-    height: 40px; /* Ensuring consistent height */
-    line-height: 28px; /* Vertically center the text */
-    font-size: 1rem;
+.play-track-button {
+  background: none;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 0.8em;
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 4px;
+  vertical-align: middle;
+  line-height: 1.4;
 }
-
-#theme-toggle {
-    right: 10px;
+.play-track-button:hover {
+  background-color: #333333;
 }
-
-#play-toggle {
-    right: 160px;
-}
-
-#theme-toggle, #play-toggle {
-    display: inline-block;
-}
-
 select {
     font-family: monospace;
-    background-color: var(--bg);
-    color: var(--fg);
-    border: 1px solid var(--fg);
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #ffffff;
     padding: 4px;
 }
-
 h1,
 h2,
 h3,
 h4 {
-    border-bottom: 1px solid var(--fg);
+    border-bottom: 1px solid #ffffff;
     padding-bottom: 2px;
 }
-
 #overlay {
     position: fixed;
     top: 0;
@@ -75,95 +51,61 @@ h4 {
     align-items: center;
     justify-content: center;
     z-index: 9999;
-}
-
-#now-playing a {
-    color: var(--fg);
-    text-decoration: none;
-      transition: opacity 0.3s ease;
-}
-
-/* Responsive tweaks */
-body {
-    padding: 10px;
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-/* Make lists and content adapt to screen width */
-ul, p, h1, h2 {
-    max-width: 100%;
-    word-wrap: break-word;
-}
-
-/* Ensure overlay scales well */
-#overlay {
     font-size: 1.5rem;
     text-align: center;
     padding: 1rem;
 }
-
-/* Responsive theme toggle button */
-#theme-toggle,
-#play-toggle {
-    font-size: 1rem;
+#now-playing a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
 }
-
-/* Responsive audio player */
+ul, p, h1, h2 {
+    max-width: 100%;
+    word-wrap: break-word;
+}
 audio {
     width: 100%;
     max-width: 400px;
-}
-
-/* Media Query: Small screens (phones) */
-@media (max-width: 600px) {
-    body {
-        font-size: 14px;
-    }
-
-    h1, h2, h3, h4 {
-        font-size: 1.2em;
-    }
-
-    #theme-toggle,
-    #play-toggle {
-        padding: 6px 10px;
-        font-size: 0.9rem;
-        height: 36px; /* Slightly smaller height on smaller screens */
-        line-height: 24px; /* Adjust text vertical alignment */
-    }
-
-    #theme-toggle {
-        right: 8px;
-    }
-
-    #play-toggle {
-        right: 144px; /* Adjust spacing based on smaller screens */
-    }
-
-    #overlay {
-        font-size: 1.2rem;
-        padding: 2rem;
-    }
-
-    a {
-        word-break: break-word;
-    }
 }
 .inline-icon {
   height: 2em;
   width: auto;
   vertical-align: middle;
-  margin-left: 0em; /* optional: space between text and icons */
+  margin-left: 0em;
 }
 h1 .heading-text {
   padding-bottom: 2px;
 }
-
-  .highlightable {
-    color: rgb(255, 255, 255);
-    text-decoration: underline;
-  }
-  .highlightable:hover {
-    text-decoration: none;
-  }
+.highlightable {
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+}
+.highlightable:hover {
+  text-decoration: none;
+}
+@media (max-width: 600px) {
+    body {
+        font-size: 14px;
+        padding: 10px;
+    }
+    h1, h2, h3, h4 {
+        font-size: 1.2em;
+    }
+    #overlay {
+        font-size: 1.2rem;
+        padding: 2rem;
+    }
+    a {
+        word-break: break-word;
+    }
+}
+.play-icon {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 8px; 
+    font-size: 0.9em;
+    color: #ffffff; 
+    transition: color 0.2s ease, transform 0.2s ease;
+    user-select: none; 
+}
