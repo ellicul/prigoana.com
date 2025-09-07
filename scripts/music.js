@@ -1,118 +1,247 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const audio = document.getElementById("bg-audio");
+(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const audio1 = document.getElementById("bg-audio-1");
+    const audio2 = document.getElementById("bg-audio-2");
     const nowPlayingEl = document.getElementById("now-playing");
-    nowPlayingEl.style.transition = "opacity 0.5s ease-in-out";
+
+    let activeAudioEl = audio1;
+    let nextAudioEl = audio2;
 
     let lastTrackKey = null;
+    let preloadedTrack = null;
     let lastUts = null;
-
-    let currentAudioTrackKey = null;
     let isPlaying = false;
     let isInitialized = false;
     let currentTrackInfo = {};
+    const crossfadeDuration = 2000;
+    const transitionDuration = 500; // Corresponds to the CSS transition time
 
     function formatTimeAgo(uts) {
         const playedDate = new Date(uts * 1000);
         const now = new Date();
-        const diffMs = now - playedDate;
-        const totalSeconds = Math.floor(diffMs / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        const timeStringWithZone = playedDate.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-            timeZoneName: 'short'
+        const timeFormatter = new Intl.DateTimeFormat(undefined, {
+            hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short'
         });
-
-        const match = timeStringWithZone.match(/^(\d{2}:\d{2})\s*(\w{2,5})$/);
-        const formattedTime = match ? match[1] : playedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        const tzAbbr = match ? match[2] : "";
-
-        let timeAgo = `at ${formattedTime} ${tzAbbr}, `;
-        if (hours > 0) timeAgo += `${hours} hour${hours > 1 ? 's' : ''}, `;
-        if (minutes > 0) timeAgo += `${minutes} minute${minutes > 1 ? 's' : ''}, `;
-        timeAgo += `${seconds} second${seconds > 1 ? 's' : ''} ago`;
-
-        return `<p>${timeAgo}</p>`;
+        const timeString = timeFormatter.format(playedDate);
+        const diffSeconds = Math.floor((now - playedDate) / 1000);
+        const hours = Math.floor(diffSeconds / 3600);
+        const minutes = Math.floor((diffSeconds % 3600) / 60);
+        const seconds = diffSeconds % 60;
+        let timeAgoParts = [];
+        if (hours > 0) timeAgoParts.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+        if (minutes > 0) timeAgoParts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
+        if (seconds >= 0) timeAgoParts.push(`${seconds} second${seconds !== 1 ? 's' : ''} ago`);
+        return `<p>at ${timeString}, ${timeAgoParts.join(', ')}</p>`;
     }
 
     function updateTimer() {
-        if (!lastUts) return;
         const timerEl = nowPlayingEl.querySelector(".played-info");
-        if (timerEl) {
+        if (!timerEl) return;
+        
+        const nowPlayingText = "<p><em>Now playing</em></p>";
+        if (lastUts === null) {
+            if (timerEl.innerHTML !== nowPlayingText) timerEl.innerHTML = nowPlayingText;
+        } else {
             timerEl.innerHTML = formatTimeAgo(lastUts);
         }
     }
 
-    async function playSongFromKey(trackKey) {
-        if (!trackKey) {
-            console.error("playSongFromKey called with no trackKey.");
-            return;
-        }
-        console.log("Attempting to play track:", trackKey);
+    async function preloadTrack(trackKey, trackInfo) {
+        preloadedTrack = { key: trackKey, info: trackInfo, url: null, preloadedImage: null };
         try {
-            const response = await fetch(`https://qobuz.prigoana.com/search/${encodeURIComponent(trackKey)}/quality/5`);
-            if (!response.ok) throw new Error(`Track fetch failed with status: ${response.status}`);
-            const data = await response.json();
-            if (!data.url) throw new Error("No stream URL found in API response.");
+            const streamResponse = await fetch(`https://qobuz.prigoana.com/search/${encodeURIComponent(trackKey)}/quality/5`);
+            if (!streamResponse.ok) throw new Error(`Stream fetch failed: ${streamResponse.status}`);
+            const streamData = await streamResponse.json();
+            if (!streamData.url) throw new Error("No stream URL in response.");
 
-            audio.src = data.url;
-            currentAudioTrackKey = trackKey;
-            audio.load();
-            await audio.play();
-            updateMediaSessionMetadata();
+            const audioReadyPromise = new Promise((resolve, reject) => {
+                nextAudioEl.src = streamData.url;
+                nextAudioEl.load();
+                nextAudioEl.addEventListener('canplaythrough', resolve, { once: true });
+                nextAudioEl.addEventListener('error', reject, { once: true });
+            });
+
+            const imageReadyPromise = new Promise((resolve) => {
+                if (!trackInfo.image) { resolve(null); return; }
+                const img = new Image();
+                img.src = trackInfo.image;
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+            });
+
+            const [_, preloadedImage] = await Promise.all([audioReadyPromise, imageReadyPromise]);
+            preloadedTrack.url = streamData.url;
+            preloadedTrack.preloadedImage = preloadedImage;
         } catch (err) {
-            console.error("Error loading or playing track:", err);
+            console.error("Error preloading track:", err);
+            preloadedTrack = null;
+            throw err;
         }
     }
 
+    function crossfadeAndSwitch(trackData) {
+        const oldAudioEl = activeAudioEl;
+        const newAudioEl = nextAudioEl;
+        
+        lastTrackKey = trackData.key;
+        currentTrackInfo = trackData.info;
+        currentTrackInfo.imageEl = trackData.preloadedImage;
+        updateDOM();
+        updateMediaSessionMetadata();
+
+        newAudioEl.volume = 0;
+        newAudioEl.play().catch(err => console.error("New audio play error:", err));
+
+        const fade = setInterval(() => {
+            const step = 1 / (crossfadeDuration / 20);
+            oldAudioEl.volume = Math.max(0, oldAudioEl.volume - step);
+            newAudioEl.volume = Math.min(1, newAudioEl.volume + step);
+
+            if (newAudioEl.volume >= 1) {
+                clearInterval(fade);
+                oldAudioEl.pause();
+                oldAudioEl.src = "";
+                activeAudioEl = newAudioEl;
+                nextAudioEl = oldAudioEl;
+            }
+        }, 20);
+    }
+
+    async function startInitialPlayback(trackData) {
+        activeAudioEl.src = trackData.url;
+        activeAudioEl.volume = 1;
+        updateMediaSessionMetadata();
+        await activeAudioEl.play();
+    }
+    
     function togglePlayback() {
+        if (!preloadedTrack) return;
+
         if (!isInitialized) {
-            audio.muted = false;
-            playSongFromKey(lastTrackKey);
+            audio1.muted = false;
+            audio2.muted = false;
+            startInitialPlayback(preloadedTrack);
             isInitialized = true;
         } else if (isPlaying) {
-            audio.pause();
+            activeAudioEl.pause();
         } else {
-            if (lastTrackKey !== currentAudioTrackKey) {
-                playSongFromKey(lastTrackKey);
+            if (lastTrackKey !== preloadedTrack.key) {
+                 crossfadeAndSwitch(preloadedTrack);
             } else {
-                audio.play().catch(err => console.error("Audio resume error:", err));
+                activeAudioEl.play().catch(err => console.error("Audio resume error:", err));
             }
         }
     }
 
-    function setupMediaSessionHandlers() {
-        if (!('mediaSession' in navigator)) return;
+    async function fetchLastFmData(forcePlay = false) {
+        try {
+            const response = await fetch("https://lastplayed.prigoana.com/eduardprigoana/");
+            if (!response.ok) throw new Error(`API fetch failed: ${response.status}`);
+            
+            const data = await response.json();
+            const track = data.track;
+            const newTrackKey = `${track.artist["#text"]} ${track.name}`.replace(/\s+/g, '+');
 
-        navigator.mediaSession.setActionHandler('play', () => {
-            if (lastTrackKey !== currentAudioTrackKey) {
-                playSongFromKey(lastTrackKey);
+            if (newTrackKey === lastTrackKey) {
+                const isNowPlaying = track['@attr']?.nowplaying === 'true';
+                lastUts = isNowPlaying ? null : track.date?.uts;
+                return;
+            }
+
+            const newTrackInfo = {
+                name: track.name,
+                artist: track.artist["#text"],
+                album: track.album["#text"],
+                image: track.image.find(img => img.size === "extralarge")?.["#text"] || "",
+                url: track.url
+            };
+            
+            lastUts = track.date?.uts || null;
+            await preloadTrack(newTrackKey, newTrackInfo);
+            
+            lastTrackKey = preloadedTrack.key;
+            currentTrackInfo = preloadedTrack.info;
+            currentTrackInfo.imageEl = preloadedTrack.preloadedImage;
+
+            if (isPlaying || forcePlay) {
+                crossfadeAndSwitch(preloadedTrack);
             } else {
-                audio.play();
+                updateDOM();
             }
-        });
-        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-        navigator.mediaSession.setActionHandler('stop', () => {
-            audio.pause();
-            audio.currentTime = 0;
-        });
-        navigator.mediaSession.setActionHandler('seekto', (details) => {
-            if (details.fastSeek && 'fastSeek' in audio) {
-              audio.fastSeek(details.seekTime);
-              return;
-            }
-            audio.currentTime = details.seekTime;
-        });
-        navigator.mediaSession.setActionHandler('nexttrack', fetchAndPlayLatestTrack);
+        } catch (error) {
+            nowPlayingEl.textContent = "Could not load now playing info.";
+            console.error("Fetch/Preload error:", error);
+        }
+    }
+    
+    // --- THIS IS THE MODIFIED FUNCTION ---
+    function updateDOM() {
+        // --- ADDED: Get the current height before changing anything.
+        const currentHeight = nowPlayingEl.offsetHeight;
+        // --- ADDED: Apply it as a min-height to prevent the container from collapsing.
+        if (currentHeight > 0) {
+            nowPlayingEl.style.minHeight = `${currentHeight}px`;
+        }
+        
+        nowPlayingEl.style.opacity = 0;
+
+        setTimeout(() => {
+            const { name, artist, album, imageEl, url } = currentTrackInfo;
+            const artistUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}`;
+            const albumUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`;
+            const playIcon = isPlaying ? "❚❚" : "▶";
+            const playTitle = isPlaying ? "Pause this track" : "Play this track";
+            const imageHtml = imageEl ? `<a href="${albumUrl}" target="_blank" rel="noopener noreferrer"><img src="${imageEl.src}" alt="${name}" style="max-width:235px;"></a>` : "";
+
+            nowPlayingEl.innerHTML = `
+                <p>
+                    <a href="${url}" target="_blank" rel="noopener noreferrer"><strong>${name}</strong></a> by
+                    <a href="${artistUrl}" target="_blank" rel="noopener noreferrer"><strong>${artist}</strong></a>
+                    <span id="inline-play-button" class="play-icon" title="${playTitle}">${playIcon}</span>
+                </p>
+                <p>
+                    <a href="${albumUrl}" target="_blank" rel="noopener noreferrer"><strong>${album}</strong></a>
+                </p>
+                ${imageHtml}
+                <div class="played-info">${lastUts ? formatTimeAgo(lastUts) : "<p><em>Now playing</em></p>"}</div>
+            `;
+            
+            document.getElementById("inline-play-button").addEventListener('click', togglePlayback);
+            nowPlayingEl.style.opacity = 1;
+
+            // --- ADDED: After the fade-in is complete, remove the inline min-height
+            // so the element can resize naturally on the *next* update if needed.
+            setTimeout(() => {
+                nowPlayingEl.style.minHeight = '';
+            }, transitionDuration);
+
+        }, transitionDuration);
+    }
+    
+    function updatePlayPauseButton() {
+        const playButton = document.getElementById("inline-play-button");
+        if (!playButton) return;
+        playButton.textContent = isPlaying ? "❚❚" : "▶";
+        playButton.title = isPlaying ? "Pause this track" : "Play this track";
     }
 
+    function setupMediaSession() {
+        if (!('mediaSession' in navigator)) return;
+        const actions = [
+            ['play', () => activeAudioEl.play()],
+            ['pause', () => activeAudioEl.pause()],
+            ['stop', () => { activeAudioEl.pause(); activeAudioEl.currentTime = 0; }],
+            ['nexttrack', () => fetchLastFmData(true)],
+            ['seekto', (details) => { activeAudioEl.currentTime = details.seekTime; }]
+        ];
+        for (const [action, handler] of actions) {
+            try { navigator.mediaSession.setActionHandler(action, handler); } 
+            catch (error) { console.warn(`Media session action '${action}' not supported.`); }
+        }
+    }
+    
     function updateMediaSessionMetadata() {
         if (!('mediaSession' in navigator) || !currentTrackInfo.name) return;
-
         navigator.mediaSession.metadata = new MediaMetadata({
             title: currentTrackInfo.name,
             artist: currentTrackInfo.artist,
@@ -124,105 +253,44 @@ document.addEventListener("DOMContentLoaded", () => {
     function updatePositionState() {
         if ('setPositionState' in navigator.mediaSession) {
             navigator.mediaSession.setPositionState({
-                duration: audio.duration || 0,
-                playbackRate: audio.playbackRate,
-                position: audio.currentTime
+                duration: activeAudioEl.duration || 0,
+                playbackRate: activeAudioEl.playbackRate,
+                position: activeAudioEl.currentTime
             });
         }
     }
+    
+    const setupAudioEventListeners = (audioEl) => {
+        audioEl.addEventListener("play", () => {
+            if (audioEl === activeAudioEl) {
+                isPlaying = true;
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+                updatePlayPauseButton();
+            }
+        });
+        audioEl.addEventListener("pause", () => {
+            if (audioEl === activeAudioEl) {
+                isPlaying = false;
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+                updatePlayPauseButton();
+            }
+        });
+        audioEl.addEventListener("ended", () => {
+            if (audioEl === activeAudioEl) {
+                fetchLastFmData(true);
+            }
+        });
+        audioEl.addEventListener('timeupdate', () => {
+             if (audioEl === activeAudioEl) updatePositionState();
+        });
+    };
 
-    async function fetchAndPlayLatestTrack() {
-        await fetchLastFmData(true);
-    }
+    setupAudioEventListeners(audio1);
+    setupAudioEventListeners(audio2);
 
-    function fetchLastFmData(forcePlay = false) {
-        fetch("https://lastplayed.prigoana.com/eduardprigoana/")
-            .then(response => response.json())
-            .then(data => {
-                const track = data.track;
-                const newTrackKey = [...track.artist["#text"].split(' '), ...track.name.split(' ')].join('+');
-
-                if (newTrackKey === lastTrackKey && !forcePlay) return;
-
-                lastTrackKey = newTrackKey;
-                lastUts = track.date?.uts;
-
-                currentTrackInfo = {
-                    name: track.name,
-                    artist: track.artist["#text"],
-                    album: track.album["#text"],
-                    image: track.image.find(img => img.size === "extralarge")?.["#text"] || "",
-                    url: track.url
-                };
-
-                if (isPlaying || forcePlay) {
-                    playSongFromKey(newTrackKey);
-                }
-
-                updateDOM();
-            })
-            .catch(error => {
-                nowPlayingEl.textContent = "Could not load now playing info.";
-                console.error("Now playing fetch error:", error);
-            });
-    }
-
-    function updateDOM() {
-        nowPlayingEl.style.opacity = 0;
-
-        const performUpdate = () => {
-            const { name, artist, album, image, url } = currentTrackInfo;
-            const artistUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}`;
-            const albumUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`;
-            const playIcon = isPlaying ? "❚❚" : "▶";
-            const playTitle = isPlaying ? "Pause this track" : "Play this track";
-
-            nowPlayingEl.innerHTML = `
-                <p>
-                    <a href="${url}" target="_blank"><strong>${name}</strong></a> by
-                    <a href="${artistUrl}" target="_blank"><strong>${artist}</strong></a>
-                    <span id="inline-play-button" class="play-icon" title="${playTitle}">${playIcon}</span>
-                </p>
-                <p>
-                    <a href="${albumUrl}" target="_blank"><strong>${album}</strong></a>
-                </p>
-                ${image ? `<a href="${albumUrl}" target="_blank"><img src="${image}" alt="${name}" style="max-width:235px;"></a>` : ""}
-                <div class="played-info">${lastUts ? formatTimeAgo(lastUts) : "<p><em>Now playing</em></p>"}</div>
-            `;
-
-            document.getElementById("inline-play-button").addEventListener('click', togglePlayback);
-            nowPlayingEl.style.opacity = 1;
-        };
-
-        setTimeout(performUpdate, 500);
-    }
-
-    audio.addEventListener("play", () => {
-        isPlaying = true;
-        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
-        const inlinePlayButton = document.getElementById("inline-play-button");
-        if (inlinePlayButton) {
-            inlinePlayButton.textContent = "❚❚";
-            inlinePlayButton.title = "Pause this track";
-        }
-    });
-
-    audio.addEventListener("pause", () => {
-        isPlaying = false;
-        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
-        const inlinePlayButton = document.getElementById("inline-play-button");
-        if (inlinePlayButton) {
-            inlinePlayButton.textContent = "▶";
-            inlinePlayButton.title = "Play this track";
-        }
-    });
-
-    audio.addEventListener("ended", fetchAndPlayLatestTrack);
-    audio.addEventListener('timeupdate', updatePositionState);
-
-    setupMediaSessionHandlers();
+    setupMediaSession();
     fetchLastFmData();
-
     setInterval(updateTimer, 1000);
     setInterval(fetchLastFmData, 10000);
-});
+  });
+})();
