@@ -1,5 +1,17 @@
 (() => {
   document.addEventListener("DOMContentLoaded", () => {
+    const fallbackTrackData = {
+        key: 'Boards of Canada+Roygbiv',
+        info: {
+            name: 'Life Of The Party [V33](feat. André 3000)',
+            artist: 'Kanye West',
+            album: 'DONDA',
+            image: './assets/cover.jpg',
+            url: 'https://www.last.fm/music/Kanye%20West/_/Life%20Of%20The%20Party%20%5BV33%5D%20(feat.%20Andr%C3%A9%203000)'
+        },
+        streamUrl: './assets/audio.mp3'
+    };
+
     const audio1 = document.getElementById("bg-audio-1");
     const audio2 = document.getElementById("bg-audio-2");
     const nowPlayingEl = document.getElementById("now-playing");
@@ -12,9 +24,10 @@
     let lastUts = null;
     let isPlaying = false;
     let isInitialized = false;
+    let isFallbackActive = false;
     let currentTrackInfo = {};
     const crossfadeDuration = 2000;
-    const transitionDuration = 500; // Corresponds to the CSS transition time
+    const transitionDuration = 500;
 
     function formatTimeAgo(uts) {
         const playedDate = new Date(uts * 1000);
@@ -36,7 +49,7 @@
 
     function updateTimer() {
         const timerEl = nowPlayingEl.querySelector(".played-info");
-        if (!timerEl) return;
+        if (!timerEl || isFallbackActive) return;
         
         const nowPlayingText = "<p><em>Now playing</em></p>";
         if (lastUts === null) {
@@ -76,6 +89,56 @@
             console.error("Error preloading track:", err);
             preloadedTrack = null;
             throw err;
+        }
+    }
+
+    async function loadFallbackTrack(forcePlay = false) {
+        if (lastTrackKey === fallbackTrackData.key) {
+            return;
+        }
+
+        console.log("Loading fallback track.");
+        isFallbackActive = true;
+        
+        try {
+            const audioReadyPromise = new Promise((resolve, reject) => {
+                nextAudioEl.src = fallbackTrackData.streamUrl;
+                nextAudioEl.load();
+                nextAudioEl.addEventListener('canplaythrough', resolve, { once: true });
+                nextAudioEl.addEventListener('error', reject, { once: true });
+            });
+
+            const imageReadyPromise = new Promise((resolve) => {
+                if (!fallbackTrackData.info.image) { resolve(null); return; }
+                const img = new Image();
+                img.src = fallbackTrackData.info.image;
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+            });
+
+            const [_, preloadedImage] = await Promise.all([audioReadyPromise, imageReadyPromise]);
+            
+            preloadedTrack = {
+                key: fallbackTrackData.key,
+                info: fallbackTrackData.info,
+                url: fallbackTrackData.streamUrl,
+                preloadedImage: preloadedImage
+            };
+            
+            lastTrackKey = preloadedTrack.key;
+            currentTrackInfo = preloadedTrack.info;
+            currentTrackInfo.imageEl = preloadedTrack.preloadedImage;
+            lastUts = null;
+
+            if (isPlaying || forcePlay) {
+                crossfadeAndSwitch(preloadedTrack);
+            } else {
+                updateDOM();
+            }
+
+        } catch (fallbackError) {
+             console.error("Could not even load the fallback track:", fallbackError);
+             nowPlayingEl.textContent = "Error loading fallback track. Please check the console.";
         }
     }
 
@@ -135,12 +198,14 @@
 
     async function fetchLastFmData(forcePlay = false) {
         try {
-            const response = await fetch("https://lastplayed.prigoana.com/eduardprigoana/");
+            const response = await fetch("https:/lastplayed.prigoana.com/eduardprigoana/");
             if (!response.ok) throw new Error(`API fetch failed: ${response.status}`);
             
             const data = await response.json();
             const track = data.track;
             const newTrackKey = `${track.artist["#text"]} ${track.name}`.replace(/\s+/g, '+');
+            
+            isFallbackActive = false;
 
             if (newTrackKey === lastTrackKey) {
                 const isNowPlaying = track['@attr']?.nowplaying === 'true';
@@ -169,16 +234,13 @@
                 updateDOM();
             }
         } catch (error) {
-            nowPlayingEl.textContent = "Could not load now playing info.";
-            console.error("Fetch/Preload error:", error);
+            console.error("Fetch/Preload error, initiating fallback:", error);
+            await loadFallbackTrack(forcePlay);
         }
     }
     
-    // --- THIS IS THE MODIFIED FUNCTION ---
     function updateDOM() {
-        // --- ADDED: Get the current height before changing anything.
         const currentHeight = nowPlayingEl.offsetHeight;
-        // --- ADDED: Apply it as a min-height to prevent the container from collapsing.
         if (currentHeight > 0) {
             nowPlayingEl.style.minHeight = `${currentHeight}px`;
         }
@@ -193,6 +255,10 @@
             const playTitle = isPlaying ? "Pause this track" : "Play this track";
             const imageHtml = imageEl ? `<a href="${albumUrl}" target="_blank" rel="noopener noreferrer"><img src="${imageEl.src}" alt="${name}" style="max-width:235px;"></a>` : "";
 
+            const playedInfoHtml = isFallbackActive 
+                ? "<p><em>Favourite track</em></p>" 
+                : (lastUts ? formatTimeAgo(lastUts) : "<p><em>Now playing</em></p>");
+
             nowPlayingEl.innerHTML = `
                 <p>
                     <a href="${url}" target="_blank" rel="noopener noreferrer"><strong>${name}</strong></a> by
@@ -203,14 +269,12 @@
                     <a href="${albumUrl}" target="_blank" rel="noopener noreferrer"><strong>${album}</strong></a>
                 </p>
                 ${imageHtml}
-                <div class="played-info">${lastUts ? formatTimeAgo(lastUts) : "<p><em>Now playing</em></p>"}</div>
+                <div class="played-info">${playedInfoHtml}</div>
             `;
             
             document.getElementById("inline-play-button").addEventListener('click', togglePlayback);
             nowPlayingEl.style.opacity = 1;
 
-            // --- ADDED: After the fade-in is complete, remove the inline min-height
-            // so the element can resize naturally on the *next* update if needed.
             setTimeout(() => {
                 nowPlayingEl.style.minHeight = '';
             }, transitionDuration);
@@ -294,3 +358,4 @@
     setInterval(fetchLastFmData, 10000);
   });
 })();
+
