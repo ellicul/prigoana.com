@@ -14,7 +14,18 @@
     let isInitialized = false;
     let currentTrackInfo = {};
     const crossfadeDuration = 2000;
-    const transitionDuration = 500; // Corresponds to the CSS transition time
+    const transitionDuration = 500;
+
+    const servers = [
+        "https://ohio.monochrome.tf",
+        "https://virginia.monochrome.tf",
+        "https://oregon.monochrome.tf",
+        "https://california.monochrome.tf",
+        "https://frankfurt.monochrome.tf",
+        "https://london.monochrome.tf",
+        "https://singapore.monochrome.tf",
+        "https://jakarta.monochrome.tf"
+    ];
 
     function formatTimeAgo(uts) {
         const playedDate = new Date(uts * 1000);
@@ -37,7 +48,6 @@
     function updateTimer() {
         const timerEl = nowPlayingEl.querySelector(".played-info");
         if (!timerEl) return;
-        
         const nowPlayingText = "<p><em>Now playing</em></p>";
         if (lastUts === null) {
             if (timerEl.innerHTML !== nowPlayingText) timerEl.innerHTML = nowPlayingText;
@@ -46,21 +56,41 @@
         }
     }
 
+    async function fetchTrackUrl(trackKey) {
+        for (const server of servers) {
+            try {
+                const searchUrl = `${server}/search/?s=${trackKey}`;
+                const searchResponse = await fetch(searchUrl);
+                if (!searchResponse.ok) continue;
+                const searchData = await searchResponse.json();
+                if (!searchData.items || searchData.items.length === 0) continue;
+                const trackId = searchData.items[0].id;
+                const trackUrl = `${server}/track/?id=${trackId}&quality=LOSSLESS`;
+                const trackResponse = await fetch(trackUrl);
+                if (!trackResponse.ok) continue;
+                const trackData = await trackResponse.json();
+                if (!trackData || trackData.length < 3) continue;
+                const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
+                if (!originalTrackUrl) continue;
+                return originalTrackUrl;
+            } catch (err) {
+                console.error(`Error with server ${server}:`, err);
+                continue;
+            }
+        }
+        throw new Error("All servers failed");
+    }
+
     async function preloadTrack(trackKey, trackInfo) {
         preloadedTrack = { key: trackKey, info: trackInfo, url: null, preloadedImage: null };
         try {
-            const streamResponse = await fetch(`https://qobuz.prigoana.com/search/${encodeURIComponent(trackKey)}/quality/5`);
-            if (!streamResponse.ok) throw new Error(`Stream fetch failed: ${streamResponse.status}`);
-            const streamData = await streamResponse.json();
-            if (!streamData.url) throw new Error("No stream URL in response.");
-
+            const streamUrl = await fetchTrackUrl(trackKey);
             const audioReadyPromise = new Promise((resolve, reject) => {
-                nextAudioEl.src = streamData.url;
+                nextAudioEl.src = streamUrl;
                 nextAudioEl.load();
                 nextAudioEl.addEventListener('canplaythrough', resolve, { once: true });
                 nextAudioEl.addEventListener('error', reject, { once: true });
             });
-
             const imageReadyPromise = new Promise((resolve) => {
                 if (!trackInfo.image) { resolve(null); return; }
                 const img = new Image();
@@ -68,9 +98,8 @@
                 img.onload = () => resolve(img);
                 img.onerror = () => resolve(null);
             });
-
             const [_, preloadedImage] = await Promise.all([audioReadyPromise, imageReadyPromise]);
-            preloadedTrack.url = streamData.url;
+            preloadedTrack.url = streamUrl;
             preloadedTrack.preloadedImage = preloadedImage;
         } catch (err) {
             console.error("Error preloading track:", err);
@@ -82,21 +111,17 @@
     function crossfadeAndSwitch(trackData) {
         const oldAudioEl = activeAudioEl;
         const newAudioEl = nextAudioEl;
-        
         lastTrackKey = trackData.key;
         currentTrackInfo = trackData.info;
         currentTrackInfo.imageEl = trackData.preloadedImage;
         updateDOM();
         updateMediaSessionMetadata();
-
         newAudioEl.volume = 0;
         newAudioEl.play().catch(err => console.error("New audio play error:", err));
-
         const fade = setInterval(() => {
             const step = 1 / (crossfadeDuration / 20);
             oldAudioEl.volume = Math.max(0, oldAudioEl.volume - step);
             newAudioEl.volume = Math.min(1, newAudioEl.volume + step);
-
             if (newAudioEl.volume >= 1) {
                 clearInterval(fade);
                 oldAudioEl.pause();
@@ -116,7 +141,6 @@
     
     function togglePlayback() {
         if (!preloadedTrack) return;
-
         if (!isInitialized) {
             audio1.muted = false;
             audio2.muted = false;
@@ -137,17 +161,14 @@
         try {
             const response = await fetch("https://lastplayed.prigoana.com/eduardprigoana/");
             if (!response.ok) throw new Error(`API fetch failed: ${response.status}`);
-            
             const data = await response.json();
             const track = data.track;
             const newTrackKey = `${track.artist["#text"]} ${track.name}`.replace(/\s+/g, '+');
-
             if (newTrackKey === lastTrackKey) {
                 const isNowPlaying = track['@attr']?.nowplaying === 'true';
                 lastUts = isNowPlaying ? null : track.date?.uts;
                 return;
             }
-
             const newTrackInfo = {
                 name: track.name,
                 artist: track.artist["#text"],
@@ -155,14 +176,11 @@
                 image: track.image.find(img => img.size === "extralarge")?.["#text"] || "",
                 url: track.url
             };
-            
             lastUts = track.date?.uts || null;
             await preloadTrack(newTrackKey, newTrackInfo);
-            
             lastTrackKey = preloadedTrack.key;
             currentTrackInfo = preloadedTrack.info;
             currentTrackInfo.imageEl = preloadedTrack.preloadedImage;
-
             if (isPlaying || forcePlay) {
                 crossfadeAndSwitch(preloadedTrack);
             } else {
@@ -174,17 +192,12 @@
         }
     }
     
-    // --- THIS IS THE MODIFIED FUNCTION ---
     function updateDOM() {
-        // --- ADDED: Get the current height before changing anything.
         const currentHeight = nowPlayingEl.offsetHeight;
-        // --- ADDED: Apply it as a min-height to prevent the container from collapsing.
         if (currentHeight > 0) {
             nowPlayingEl.style.minHeight = `${currentHeight}px`;
         }
-        
         nowPlayingEl.style.opacity = 0;
-
         setTimeout(() => {
             const { name, artist, album, imageEl, url } = currentTrackInfo;
             const artistUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}`;
@@ -192,7 +205,6 @@
             const playIcon = isPlaying ? "❚❚" : "▶";
             const playTitle = isPlaying ? "Pause this track" : "Play this track";
             const imageHtml = imageEl ? `<a href="${albumUrl}" target="_blank" rel="noopener noreferrer"><img src="${imageEl.src}" alt="${name}" style="max-width:235px;"></a>` : "";
-
             nowPlayingEl.innerHTML = `
                 <p>
                     <a href="${url}" target="_blank" rel="noopener noreferrer"><strong>${name}</strong></a> by
@@ -205,16 +217,11 @@
                 ${imageHtml}
                 <div class="played-info">${lastUts ? formatTimeAgo(lastUts) : "<p><em>Now playing</em></p>"}</div>
             `;
-            
             document.getElementById("inline-play-button").addEventListener('click', togglePlayback);
             nowPlayingEl.style.opacity = 1;
-
-            // --- ADDED: After the fade-in is complete, remove the inline min-height
-            // so the element can resize naturally on the *next* update if needed.
             setTimeout(() => {
                 nowPlayingEl.style.minHeight = '';
             }, transitionDuration);
-
         }, transitionDuration);
     }
     
@@ -287,7 +294,6 @@
 
     setupAudioEventListeners(audio1);
     setupAudioEventListeners(audio2);
-
     setupMediaSession();
     fetchLastFmData();
     setInterval(updateTimer, 1000);

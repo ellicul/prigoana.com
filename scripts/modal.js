@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalData = {
     'shitify': {
       title: 'Spotify',
-      thoughts: "Spotify barely pays artists shit and ruined the way many people (including myself) consume music. I recommend you either pay for a better platform like Qobuz or Tidal for streaming, or out-right get it for free by cracking spotify, downloading from soulseek, or ripping from streaming through sites like lucida.su and qqdl.site",
+      thoughts: "Spotify barely pays artists shit and ruined the way many people (including myself) consume music. I recommend you either pay for a better platform like Qobuz or Tidal for streaming, or out-right get it for free by cracking spotify, downloading from soulseek, or ripping from streaming through sites like monochrome.tf, lucida.su or qqdl.site",
       links: [{
         text: 'Spotify CEO Becomes Richer Than Any Musician in History',
         url: 'https://www.headphonesty.com/2024/12/spotify-ceo-becomes-richer-musician-history/'
