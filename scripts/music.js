@@ -15,23 +15,30 @@
     let currentTrackInfo = {};
     const crossfadeDuration = 2000;
     const transitionDuration = 500;
-
-    const servers = [
-        "https://aether.squid.wtf",
-        "https://zeus.squid.wtf",
-        "https://kraken.squid.wtf",
-        "https://phoenix.squid.wtf",
-        "https://shiva.squid.wtf",
-        "https://chaos.squid.wtf",
-        "https://ohio.monochrome.tf",
-        "https://virginia.monochrome.tf",
-        "https://oregon.monochrome.tf",
-        "https://california.monochrome.tf",
-        "https://frankfurt.monochrome.tf",
-        "https://london.monochrome.tf",
-        "https://singapore.monochrome.tf",
-        "https://jakarta.monochrome.tf"
-    ];
+const servers = [
+    "https://triton.squid.wtf",
+    "https://aether.squid.wtf",
+    "https://zeus.squid.wtf",
+    "https://kraken.squid.wtf",
+    "https://phoenix.squid.wtf",
+    "https://shiva.squid.wtf",
+    "https://chaos.squid.wtf",
+    "https://ohio.monochrome.tf",
+    "https://virginia.monochrome.tf",
+    "https://oregon.monochrome.tf",
+    "https://california.monochrome.tf",
+    "https://frankfurt.monochrome.tf",
+    "https://london.monochrome.tf",
+    "https://singapore.monochrome.tf",
+    "https://jakarta.monochrome.tf",
+    "https://wolf.qqdl.site",
+    "https://maus.qqdl.site",
+    "https://vogel.qqdl.site",
+    "https://katze.qqdl.site",
+    "https://hund.qqdl.site",
+    "https://hifi.401658.xyz",
+    "https://tidal.kinoplus.online/"
+];
 
 
     function formatTimeAgo(uts) {
@@ -145,7 +152,7 @@
         updateMediaSessionMetadata();
         await activeAudioEl.play();
     }
-    
+
     function togglePlayback() {
         if (!preloadedTrack) return;
         if (!isInitialized) {
@@ -198,7 +205,7 @@
             console.error("Fetch/Preload error:", error);
         }
     }
-    
+
     function updateDOM() {
         const currentHeight = nowPlayingEl.offsetHeight;
         if (currentHeight > 0) {
@@ -231,7 +238,7 @@
             }, transitionDuration);
         }, transitionDuration);
     }
-    
+
     function updatePlayPauseButton() {
         const playButton = document.getElementById("inline-play-button");
         if (!playButton) return;
@@ -249,11 +256,11 @@
             ['seekto', (details) => { activeAudioEl.currentTime = details.seekTime; }]
         ];
         for (const [action, handler] of actions) {
-            try { navigator.mediaSession.setActionHandler(action, handler); } 
+            try { navigator.mediaSession.setActionHandler(action, handler); }
             catch (error) { console.warn(`Media session action '${action}' not supported.`); }
         }
     }
-    
+
     function updateMediaSessionMetadata() {
         if (!('mediaSession' in navigator) || !currentTrackInfo.name) return;
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -273,7 +280,7 @@
             });
         }
     }
-    
+
     const setupAudioEventListeners = (audioEl) => {
         audioEl.addEventListener("play", () => {
             if (audioEl === activeAudioEl) {
