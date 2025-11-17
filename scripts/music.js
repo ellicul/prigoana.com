@@ -13,10 +13,17 @@
     let isPlaying = false;
     let isInitialized = false;
     let currentTrackInfo = {};
-    let workingServerIndex = null
+    let workingServerIndex = null;
+    let trackIdCache = {}; // Cache for trackKey -> trackId mappings
     const crossfadeDuration = 2000;
     const transitionDuration = 500;
 const servers = [
+    "https://wolf.qqdl.site",
+    "https://maus.qqdl.site",
+    "https://vogel.qqdl.site",
+    "https://katze.qqdl.site",
+    "https://hund.qqdl.site",
+    "https://tidal.kinoplus.online/",
     "https://triton.squid.wtf",
     "https://aether.squid.wtf",
     "https://zeus.squid.wtf",
@@ -32,13 +39,7 @@ const servers = [
     "https://london.monochrome.tf",
     "https://singapore.monochrome.tf",
     "https://jakarta.monochrome.tf",
-    "https://wolf.qqdl.site",
-    "https://maus.qqdl.site",
-    "https://vogel.qqdl.site",
-    "https://katze.qqdl.site",
-    "https://hund.qqdl.site",
-    "https://hifi.401658.xyz",
-    "https://tidal.kinoplus.online/"
+    "https://hifi.401658.xyz"
 ];
 
 
@@ -72,6 +73,30 @@ const servers = [
     }
 
     async function fetchTrackUrl(trackKey) {
+        // Try using cached track ID first
+        if (trackIdCache[trackKey] && workingServerIndex !== null) {
+            try {
+                const server = servers[workingServerIndex];
+                const trackId = trackIdCache[trackKey];
+                const trackUrl = `${server}/track/?id=${trackId}&quality=LOW`;
+                const trackResponse = await fetch(trackUrl);
+                if (trackResponse.ok) {
+                    const trackData = await trackResponse.json();
+                    if (trackData && trackData.length >= 3) {
+                        const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
+                        if (originalTrackUrl) {
+                            console.log(`Using cached track ID: ${trackId} from server: ${server}`);
+                            return originalTrackUrl;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error(`Cached track ID failed:`, err);
+            }
+            console.log("Cached track ID failed, falling back to search...");
+        }
+
+        // Try working server with search
         if (workingServerIndex !== null) {
             try {
                 const server = servers[workingServerIndex];
@@ -88,7 +113,8 @@ const servers = [
                             if (trackData && trackData.length >= 3) {
                                 const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
                                 if (originalTrackUrl) {
-                                    console.log(`Using working server: ${server}`);
+                                    trackIdCache[trackKey] = trackId; // Cache the track ID
+                                    console.log(`Using working server: ${server}, cached track ID: ${trackId}`);
                                     return originalTrackUrl;
                                 }
                             }
@@ -102,6 +128,7 @@ const servers = [
             workingServerIndex = null;
         }
 
+        // Search all servers
         for (let i = 0; i < servers.length; i++) {
             const server = servers[i];
             try {
@@ -120,7 +147,8 @@ const servers = [
                 if (!originalTrackUrl) continue;
 
                 workingServerIndex = i;
-                console.log(`Found working server: ${server}`);
+                trackIdCache[trackKey] = trackId; // Cache the track ID
+                console.log(`Found working server: ${server}, cached track ID: ${trackId}`);
                 return originalTrackUrl;
             } catch (err) {
                 console.error(`Error with server ${server}:`, err);
