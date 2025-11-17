@@ -13,6 +13,7 @@
     let isPlaying = false;
     let isInitialized = false;
     let currentTrackInfo = {};
+    let workingServerIndex = null
     const crossfadeDuration = 2000;
     const transitionDuration = 500;
 const servers = [
@@ -71,7 +72,38 @@ const servers = [
     }
 
     async function fetchTrackUrl(trackKey) {
-        for (const server of servers) {
+        if (workingServerIndex !== null) {
+            try {
+                const server = servers[workingServerIndex];
+                const searchUrl = `${server}/search/?s=${trackKey}`;
+                const searchResponse = await fetch(searchUrl);
+                if (searchResponse.ok) {
+                    const searchData = await searchResponse.json();
+                    if (searchData.items && searchData.items.length > 0) {
+                        const trackId = searchData.items[0].id;
+                        const trackUrl = `${server}/track/?id=${trackId}&quality=LOW`;
+                        const trackResponse = await fetch(trackUrl);
+                        if (trackResponse.ok) {
+                            const trackData = await trackResponse.json();
+                            if (trackData && trackData.length >= 3) {
+                                const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
+                                if (originalTrackUrl) {
+                                    console.log(`Using working server: ${server}`);
+                                    return originalTrackUrl;
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error(`Working server ${servers[workingServerIndex]} failed:`, err);
+            }
+            console.log("Working server failed, searching for new server...");
+            workingServerIndex = null;
+        }
+
+        for (let i = 0; i < servers.length; i++) {
+            const server = servers[i];
             try {
                 const searchUrl = `${server}/search/?s=${trackKey}`;
                 const searchResponse = await fetch(searchUrl);
@@ -86,6 +118,9 @@ const servers = [
                 if (!trackData || trackData.length < 3) continue;
                 const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
                 if (!originalTrackUrl) continue;
+
+                workingServerIndex = i;
+                console.log(`Found working server: ${server}`);
                 return originalTrackUrl;
             } catch (err) {
                 console.error(`Error with server ${server}:`, err);
