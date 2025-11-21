@@ -1,379 +1,316 @@
 (() => {
-  document.addEventListener("DOMContentLoaded", () => {
-    const audio1 = document.getElementById("bg-audio-1");
-    const audio2 = document.getElementById("bg-audio-2");
-    const nowPlayingEl = document.getElementById("now-playing");
+    document.addEventListener("DOMContentLoaded", () => {
+        const audio1 = document.getElementById("bg-audio-1");
+        const audio2 = document.getElementById("bg-audio-2");
+        const container = document.getElementById("now-playing");
+        const elArt = document.getElementById("np-art");
+        const elTrack = document.getElementById("np-track");
+        const elArtist = document.getElementById("np-artist");
+        const elAlbum = document.getElementById("np-album");
+        const elTime = document.getElementById("np-time");
+        const elPlayBtn = document.getElementById("inline-play-button");
 
-    let activeAudioEl = audio1;
-    let nextAudioEl = audio2;
+        let activeAudioEl = audio1;
+        let nextAudioEl = audio2;
+        let lastTrackKey = null;
+        let isPlaying = false;
+        let isInitialized = false;
+        let currentTrackInfo = {};
+        let workingServerIndex = null;
+        let trackIdCache = {};
+        let hasAudioSource = false;
+        let audioUrl = null;
 
-    let lastTrackKey = null;
-    let preloadedTrack = null;
-    let lastUts = null;
-    let isPlaying = false;
-    let isInitialized = false;
-    let currentTrackInfo = {};
-    let workingServerIndex = null;
-    let trackIdCache = {}; // Cache for trackKey -> trackId mappings
-    const crossfadeDuration = 2000;
-    const transitionDuration = 500;
-const servers = [
-    "https://wolf.qqdl.site",
-    "https://maus.qqdl.site",
-    "https://vogel.qqdl.site",
-    "https://katze.qqdl.site",
-    "https://hund.qqdl.site",
-    "https://tidal.kinoplus.online/",
-    "https://triton.squid.wtf",
-    "https://aether.squid.wtf",
-    "https://zeus.squid.wtf",
-    "https://kraken.squid.wtf",
-    "https://phoenix.squid.wtf",
-    "https://shiva.squid.wtf",
-    "https://chaos.squid.wtf",
-    "https://ohio.monochrome.tf",
-    "https://virginia.monochrome.tf",
-    "https://oregon.monochrome.tf",
-    "https://california.monochrome.tf",
-    "https://frankfurt.monochrome.tf",
-    "https://london.monochrome.tf",
-    "https://singapore.monochrome.tf",
-    "https://jakarta.monochrome.tf",
-    "https://hifi.401658.xyz"
-];
-
-
-    function formatTimeAgo(uts) {
-        const playedDate = new Date(uts * 1000);
-        const now = new Date();
-        const timeFormatter = new Intl.DateTimeFormat(undefined, {
-            hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short'
-        });
-        const timeString = timeFormatter.format(playedDate);
-        const diffSeconds = Math.floor((now - playedDate) / 1000);
-        const hours = Math.floor(diffSeconds / 3600);
-        const minutes = Math.floor((diffSeconds % 3600) / 60);
-        const seconds = diffSeconds % 60;
-        let timeAgoParts = [];
-        if (hours > 0) timeAgoParts.push(`${hours} hour${hours > 1 ? 's' : ''}`);
-        if (minutes > 0) timeAgoParts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
-        if (seconds >= 0) timeAgoParts.push(`${seconds} second${seconds !== 1 ? 's' : ''} ago`);
-        return `<p>at ${timeString}, ${timeAgoParts.join(', ')}</p>`;
-    }
-
-    function updateTimer() {
-        const timerEl = nowPlayingEl.querySelector(".played-info");
-        if (!timerEl) return;
-        const nowPlayingText = "<p><em>Now playing</em></p>";
-        if (lastUts === null) {
-            if (timerEl.innerHTML !== nowPlayingText) timerEl.innerHTML = nowPlayingText;
-        } else {
-            timerEl.innerHTML = formatTimeAgo(lastUts);
-        }
-    }
-
-    async function fetchTrackUrl(trackKey) {
-        // Try using cached track ID first
-        if (trackIdCache[trackKey] && workingServerIndex !== null) {
-            try {
-                const server = servers[workingServerIndex];
-                const trackId = trackIdCache[trackKey];
-                const trackUrl = `${server}/track/?id=${trackId}&quality=LOW`;
-                const trackResponse = await fetch(trackUrl);
-                if (trackResponse.ok) {
-                    const trackData = await trackResponse.json();
-                    if (trackData && trackData.length >= 3) {
-                        const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
-                        if (originalTrackUrl) {
-                            console.log(`Using cached track ID: ${trackId} from server: ${server}`);
-                            return originalTrackUrl;
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error(`Cached track ID failed:`, err);
-            }
-            console.log("Cached track ID failed, falling back to search...");
-        }
-
-        // Try working server with search
-        if (workingServerIndex !== null) {
-            try {
-                const server = servers[workingServerIndex];
-                const searchUrl = `${server}/search/?s=${trackKey}`;
-                const searchResponse = await fetch(searchUrl);
-                if (searchResponse.ok) {
-                    const searchData = await searchResponse.json();
-                    if (searchData.items && searchData.items.length > 0) {
-                        const trackId = searchData.items[0].id;
-                        const trackUrl = `${server}/track/?id=${trackId}&quality=LOW`;
-                        const trackResponse = await fetch(trackUrl);
-                        if (trackResponse.ok) {
-                            const trackData = await trackResponse.json();
-                            if (trackData && trackData.length >= 3) {
-                                const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
-                                if (originalTrackUrl) {
-                                    trackIdCache[trackKey] = trackId; // Cache the track ID
-                                    console.log(`Using working server: ${server}, cached track ID: ${trackId}`);
-                                    return originalTrackUrl;
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error(`Working server ${servers[workingServerIndex]} failed:`, err);
-            }
-            console.log("Working server failed, searching for new server...");
-            workingServerIndex = null;
-        }
-
-        // Search all servers
-        for (let i = 0; i < servers.length; i++) {
-            const server = servers[i];
-            try {
-                const searchUrl = `${server}/search/?s=${trackKey}`;
-                const searchResponse = await fetch(searchUrl);
-                if (!searchResponse.ok) continue;
-                const searchData = await searchResponse.json();
-                if (!searchData.items || searchData.items.length === 0) continue;
-                const trackId = searchData.items[0].id;
-                const trackUrl = `${server}/track/?id=${trackId}&quality=LOW`;
-                const trackResponse = await fetch(trackUrl);
-                if (!trackResponse.ok) continue;
-                const trackData = await trackResponse.json();
-                if (!trackData || trackData.length < 3) continue;
-                const originalTrackUrl = trackData[2]?.OriginalTrackUrl;
-                if (!originalTrackUrl) continue;
-
-                workingServerIndex = i;
-                trackIdCache[trackKey] = trackId; // Cache the track ID
-                console.log(`Found working server: ${server}, cached track ID: ${trackId}`);
-                return originalTrackUrl;
-            } catch (err) {
-                console.error(`Error with server ${server}:`, err);
-                continue;
-            }
-        }
-        throw new Error("All servers failed");
-    }
-
-    async function preloadTrack(trackKey, trackInfo) {
-        preloadedTrack = { key: trackKey, info: trackInfo, url: null, preloadedImage: null };
-        try {
-            const streamUrl = await fetchTrackUrl(trackKey);
-            const audioReadyPromise = new Promise((resolve, reject) => {
-                nextAudioEl.src = streamUrl;
-                nextAudioEl.load();
-                nextAudioEl.addEventListener('canplaythrough', resolve, { once: true });
-                nextAudioEl.addEventListener('error', reject, { once: true });
-            });
-            const imageReadyPromise = new Promise((resolve) => {
-                if (!trackInfo.image) { resolve(null); return; }
-                const img = new Image();
-                img.src = trackInfo.image;
-                img.onload = () => resolve(img);
-                img.onerror = () => resolve(null);
-            });
-            const [_, preloadedImage] = await Promise.all([audioReadyPromise, imageReadyPromise]);
-            preloadedTrack.url = streamUrl;
-            preloadedTrack.preloadedImage = preloadedImage;
-        } catch (err) {
-            console.error("Error preloading track:", err);
-            preloadedTrack = null;
-            throw err;
-        }
-    }
-
-    function crossfadeAndSwitch(trackData) {
-        const oldAudioEl = activeAudioEl;
-        const newAudioEl = nextAudioEl;
-        lastTrackKey = trackData.key;
-        currentTrackInfo = trackData.info;
-        currentTrackInfo.imageEl = trackData.preloadedImage;
-        updateDOM();
-        updateMediaSessionMetadata();
-        newAudioEl.volume = 0;
-        newAudioEl.play().catch(err => console.error("New audio play error:", err));
-        const fade = setInterval(() => {
-            const step = 1 / (crossfadeDuration / 20);
-            oldAudioEl.volume = Math.max(0, oldAudioEl.volume - step);
-            newAudioEl.volume = Math.min(1, newAudioEl.volume + step);
-            if (newAudioEl.volume >= 1) {
-                clearInterval(fade);
-                oldAudioEl.pause();
-                oldAudioEl.src = "";
-                activeAudioEl = newAudioEl;
-                nextAudioEl = oldAudioEl;
-            }
-        }, 20);
-    }
-
-    async function startInitialPlayback(trackData) {
-        activeAudioEl.src = trackData.url;
-        activeAudioEl.volume = 1;
-        updateMediaSessionMetadata();
-        await activeAudioEl.play();
-    }
-
-    function togglePlayback() {
-        if (!preloadedTrack) return;
-        if (!isInitialized) {
-            audio1.muted = false;
-            audio2.muted = false;
-            startInitialPlayback(preloadedTrack);
-            isInitialized = true;
-        } else if (isPlaying) {
-            activeAudioEl.pause();
-        } else {
-            if (lastTrackKey !== preloadedTrack.key) {
-                 crossfadeAndSwitch(preloadedTrack);
-            } else {
-                activeAudioEl.play().catch(err => console.error("Audio resume error:", err));
-            }
-        }
-    }
-
-    async function fetchLastFmData(forcePlay = false) {
-        try {
-            const response = await fetch("https://lastplayed.prigoana.com/eduardprigoana/");
-            if (!response.ok) throw new Error(`API fetch failed: ${response.status}`);
-            const data = await response.json();
-            const track = data.track;
-            const newTrackKey = `${track.artist["#text"]} ${track.name}`.replace(/\s+/g, '+');
-            if (newTrackKey === lastTrackKey) {
-                const isNowPlaying = track['@attr']?.nowplaying === 'true';
-                lastUts = isNowPlaying ? null : track.date?.uts;
-                return;
-            }
-            const newTrackInfo = {
-                name: track.name,
-                artist: track.artist["#text"],
-                album: track.album["#text"],
-                image: track.image.find(img => img.size === "extralarge")?.["#text"] || "",
-                url: track.url
-            };
-            lastUts = track.date?.uts || null;
-            await preloadTrack(newTrackKey, newTrackInfo);
-            lastTrackKey = preloadedTrack.key;
-            currentTrackInfo = preloadedTrack.info;
-            currentTrackInfo.imageEl = preloadedTrack.preloadedImage;
-            if (isPlaying || forcePlay) {
-                crossfadeAndSwitch(preloadedTrack);
-            } else {
-                updateDOM();
-            }
-        } catch (error) {
-            nowPlayingEl.textContent = "Could not load now playing info.";
-            console.error("Fetch/Preload error:", error);
-        }
-    }
-
-    function updateDOM() {
-        const currentHeight = nowPlayingEl.offsetHeight;
-        if (currentHeight > 0) {
-            nowPlayingEl.style.minHeight = `${currentHeight}px`;
-        }
-        nowPlayingEl.style.opacity = 0;
-        setTimeout(() => {
-            const { name, artist, album, imageEl, url } = currentTrackInfo;
-            const artistUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}`;
-            const albumUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`;
-            const playIcon = isPlaying ? "❚❚" : "▶";
-            const playTitle = isPlaying ? "Pause this track" : "Play this track";
-            const imageHtml = imageEl ? `<a href="${albumUrl}" target="_blank" rel="noopener noreferrer"><img src="${imageEl.src}" alt="${name}" style="max-width:235px;"></a>` : "";
-            nowPlayingEl.innerHTML = `
-                <p>
-                    <a href="${url}" target="_blank" rel="noopener noreferrer"><strong>${name}</strong></a> by
-                    <a href="${artistUrl}" target="_blank" rel="noopener noreferrer"><strong>${artist}</strong></a>
-                    <span id="inline-play-button" class="play-icon" title="${playTitle}">${playIcon}</span>
-                </p>
-                <p>
-                    <a href="${albumUrl}" target="_blank" rel="noopener noreferrer"><strong>${album}</strong></a>
-                </p>
-                ${imageHtml}
-                <div class="played-info">${lastUts ? formatTimeAgo(lastUts) : "<p><em>Now playing</em></p>"}</div>
-            `;
-            document.getElementById("inline-play-button").addEventListener('click', togglePlayback);
-            nowPlayingEl.style.opacity = 1;
-            setTimeout(() => {
-                nowPlayingEl.style.minHeight = '';
-            }, transitionDuration);
-        }, transitionDuration);
-    }
-
-    function updatePlayPauseButton() {
-        const playButton = document.getElementById("inline-play-button");
-        if (!playButton) return;
-        playButton.textContent = isPlaying ? "❚❚" : "▶";
-        playButton.title = isPlaying ? "Pause this track" : "Play this track";
-    }
-
-    function setupMediaSession() {
-        if (!('mediaSession' in navigator)) return;
-        const actions = [
-            ['play', () => activeAudioEl.play()],
-            ['pause', () => activeAudioEl.pause()],
-            ['stop', () => { activeAudioEl.pause(); activeAudioEl.currentTime = 0; }],
-            ['nexttrack', () => fetchLastFmData(true)],
-            ['seekto', (details) => { activeAudioEl.currentTime = details.seekTime; }]
+        const crossfadeDuration = 2000;
+        const LASTFM_USER = "eduardprigoana";
+        const LASTFM_API_KEY = "816cfe50ddeeb73c9987b85de5c19e71";
+        const servers = [
+            "https://tidal.kinoplus.online/",
+            "https://wolf.qqdl.site",
+            "https://maus.qqdl.site",
+            "https://vogel.qqdl.site",
+            "https://katze.qqdl.site",
+            "https://hund.qqdl.site"
         ];
-        for (const [action, handler] of actions) {
-            try { navigator.mediaSession.setActionHandler(action, handler); }
-            catch (error) { console.warn(`Media session action '${action}' not supported.`); }
+
+        function formatTimeAgo(uts) {
+            if (!uts) return "Now playing";
+            const playedDate = new Date(uts * 1000);
+            const now = new Date();
+            const diffSeconds = Math.floor((now - playedDate) / 1000);
+
+            if (diffSeconds < 60) return "Just now";
+            const minutes = Math.floor(diffSeconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            return `${hours}h ago`;
         }
-    }
 
-    function updateMediaSessionMetadata() {
-        if (!('mediaSession' in navigator) || !currentTrackInfo.name) return;
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: currentTrackInfo.name,
-            artist: currentTrackInfo.artist,
-            album: currentTrackInfo.album,
-            artwork: currentTrackInfo.image ? [{ src: currentTrackInfo.image, sizes: '300x300', type: 'image/jpeg' }] : []
-        });
-    }
+        function updateTimer() {
+            if (!currentTrackInfo.uts) {
+                elTime.textContent = "Now playing";
+            } else {
+                elTime.textContent = formatTimeAgo(currentTrackInfo.uts);
+            }
+            elTime.classList.add('fade-in');
+        }
 
-    function updatePositionState() {
-        if ('setPositionState' in navigator.mediaSession) {
-            navigator.mediaSession.setPositionState({
-                duration: activeAudioEl.duration || 0,
-                playbackRate: activeAudioEl.playbackRate,
-                position: activeAudioEl.currentTime
+        function renderMetadata(info) {
+            container.classList.remove('skeleton');
+
+            const artistEnc = encodeURIComponent(info.artist);
+            const albumEnc = encodeURIComponent(info.album);
+
+            const updateText = (el, text, href) => {
+                el.classList.remove('fade-in');
+                setTimeout(() => {
+                    el.textContent = text;
+                    if (href) el.href = href;
+                    el.classList.add('fade-in');
+                }, 100);
+            };
+
+            updateText(elTrack, info.name, info.url);
+            updateText(elArtist, info.artist, `https://www.last.fm/music/${artistEnc}`);
+            updateText(elAlbum, info.album, `https://www.last.fm/music/${artistEnc}/${albumEnc}`);
+
+            const newImg = new Image();
+            newImg.src = info.image || "";
+            newImg.onload = () => {
+                elArt.src = newImg.src;
+                elArt.classList.add('loaded');
+            };
+            if(!info.image) elArt.classList.add('loaded');
+
+            updateTimer();
+        }
+
+        function setPlayButtonState(available) {
+            if (available) {
+                elPlayBtn.classList.add('visible');
+                elPlayBtn.textContent = isPlaying ? "❚❚" : "▶";
+                elPlayBtn.title = isPlaying ? "Pause" : "Play Preview";
+            } else {
+                elPlayBtn.classList.remove('visible');
+            }
+        }
+
+        async function findAudioUrl(trackKey) {
+            if (trackIdCache[trackKey] && workingServerIndex !== null) {
+                try {
+                    const url = await checkServerForTrack(servers[workingServerIndex], trackIdCache[trackKey], true);
+                    if (url) return url;
+                } catch (e) { }
+            }
+
+            if (workingServerIndex !== null) {
+                try {
+                    const url = await searchAndGetUrl(servers[workingServerIndex], trackKey);
+                    if (url) return url;
+                } catch (e) { workingServerIndex = null; }
+            }
+
+            for (let i = 0; i < servers.length; i++) {
+                try {
+                    const url = await searchAndGetUrl(servers[i], trackKey);
+                    if (url) {
+                        workingServerIndex = i;
+                        return url;
+                    }
+                } catch (e) { continue; }
+            }
+            throw new Error("Audio not found on any server");
+        }
+
+        async function checkServerForTrack(server, trackId, isId = false) {
+            const url = `${server}/track/?id=${trackId}&quality=LOW`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Track fetch failed");
+            const data = await res.json();
+            if (data && data.length >= 3 && data[2]?.OriginalTrackUrl) {
+                return data[2].OriginalTrackUrl;
+            }
+            throw new Error("Invalid track data");
+        }
+
+        async function searchAndGetUrl(server, term) {
+            const searchUrl = `${server}/search/?s=${encodeURIComponent(term)}`;
+            const res = await fetch(searchUrl);
+            if (!res.ok) throw new Error("Search failed");
+            const data = await res.json();
+            if (data.items && data.items.length > 0) {
+                const id = data.items[0].id;
+                const audioUrl = await checkServerForTrack(server, id);
+                if (audioUrl) {
+                    trackIdCache[term] = id;
+                    return audioUrl;
+                }
+            }
+            return null;
+        }
+
+        async function prepareAudio(url) {
+            return new Promise((resolve, reject) => {
+                nextAudioEl.src = url;
+                nextAudioEl.load();
+                const onCanPlay = () => {
+                    nextAudioEl.removeEventListener('error', onError);
+                    resolve();
+                };
+                const onError = (e) => {
+                    nextAudioEl.removeEventListener('canplaythrough', onCanPlay);
+                    reject(e);
+                };
+                nextAudioEl.addEventListener('canplaythrough', onCanPlay, { once: true });
+                nextAudioEl.addEventListener('error', onError, { once: true });
             });
         }
-    }
 
-    const setupAudioEventListeners = (audioEl) => {
-        audioEl.addEventListener("play", () => {
-            if (audioEl === activeAudioEl) {
-                isPlaying = true;
-                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
-                updatePlayPauseButton();
-            }
-        });
-        audioEl.addEventListener("pause", () => {
-            if (audioEl === activeAudioEl) {
-                isPlaying = false;
-                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
-                updatePlayPauseButton();
-            }
-        });
-        audioEl.addEventListener("ended", () => {
-            if (audioEl === activeAudioEl) {
-                fetchLastFmData(true);
-            }
-        });
-        audioEl.addEventListener('timeupdate', () => {
-             if (audioEl === activeAudioEl) updatePositionState();
-        });
-    };
+        function togglePlayback() {
+            if (!hasAudioSource || !audioUrl) return;
 
-    setupAudioEventListeners(audio1);
-    setupAudioEventListeners(audio2);
-    setupMediaSession();
-    fetchLastFmData();
-    setInterval(updateTimer, 1000);
-    setInterval(fetchLastFmData, 10000);
-  });
+            if (!isInitialized) {
+                activeAudioEl = nextAudioEl;
+                activeAudioEl.volume = 1;
+                activeAudioEl.muted = false;
+                activeAudioEl.play()
+                    .then(() => {
+                        isPlaying = true;
+                        isInitialized = true;
+                        setPlayButtonState(true);
+                        setupMediaSession();
+                    })
+                    .catch(e => console.error(e));
+            } else {
+                if (isPlaying) {
+                    activeAudioEl.pause();
+                } else {
+                    activeAudioEl.play();
+                }
+            }
+        }
+
+        function performCrossfade() {
+            const fadingOut = activeAudioEl;
+            const fadingIn = nextAudioEl;
+
+            fadingIn.volume = 0;
+            fadingIn.muted = false;
+            fadingIn.play().catch(e => console.error(e));
+
+            let vol = 0;
+            const step = 0.05;
+            const interval = 50;
+
+            const fadeTimer = setInterval(() => {
+                vol += step;
+                if (vol >= 1) {
+                    vol = 1;
+                    clearInterval(fadeTimer);
+                    fadingOut.pause();
+                    fadingOut.currentTime = 0;
+                    activeAudioEl = fadingIn;
+                    nextAudioEl = fadingOut;
+                }
+                fadingIn.volume = vol;
+                fadingOut.volume = Math.max(0, 1 - vol);
+            }, interval);
+        }
+
+        async function fetchLastFmData(forcePlay = false) {
+            try {
+                const url = `https://ws.audioscrobbler.com/2.0/?method=User.getrecenttracks&user=${LASTFM_USER}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!data.recenttracks || !data.recenttracks.track.length) return;
+
+                const track = data.recenttracks.track[0];
+                const trackKey = `${track.artist["#text"]} ${track.name}`.replace(/\s+/g, '+');
+                const isNowPlaying = track['@attr']?.nowplaying === 'true';
+                const uts = isNowPlaying ? null : track.date?.uts;
+
+                if (trackKey === lastTrackKey) {
+                    currentTrackInfo.uts = uts;
+                    updateTimer();
+                    return;
+                }
+
+                lastTrackKey = trackKey;
+
+                let img = track.image.find(i => i.size === "extralarge")?.["#text"] || track.image.at(-1)?.["#text"];
+
+                currentTrackInfo = {
+                    name: track.name,
+                    artist: track.artist["#text"],
+                    album: track.album["#text"],
+                    image: img,
+                    url: track.url,
+                    uts: uts
+                };
+
+                renderMetadata(currentTrackInfo);
+
+                hasAudioSource = false;
+                setPlayButtonState(false);
+
+                try {
+                    const url = await findAudioUrl(trackKey);
+                    await prepareAudio(url);
+
+                    audioUrl = url;
+                    hasAudioSource = true;
+                    setPlayButtonState(true);
+
+                    if (isPlaying || forcePlay) {
+                        performCrossfade();
+                        setupMediaSession();
+                    }
+                } catch (audioErr) {
+                }
+
+            } catch (err) {
+                if(container.classList.contains('skeleton')) {
+                    elTrack.textContent = "Offline";
+                }
+            }
+        }
+
+        elPlayBtn.addEventListener('click', togglePlayback);
+
+        [audio1, audio2].forEach(audio => {
+            audio.addEventListener('play', () => {
+                if (audio === activeAudioEl) {
+                    isPlaying = true;
+                    setPlayButtonState(true);
+                    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+                }
+            });
+            audio.addEventListener('pause', () => {
+                if (audio === activeAudioEl) {
+                    isPlaying = false;
+                    setPlayButtonState(true);
+                    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+                }
+            });
+            audio.addEventListener('ended', () => fetchLastFmData(true));
+        });
+
+        function setupMediaSession() {
+            if (!('mediaSession' in navigator)) return;
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: currentTrackInfo.name,
+                artist: currentTrackInfo.artist,
+                album: currentTrackInfo.album,
+                artwork: currentTrackInfo.image ? [{ src: currentTrackInfo.image }] : []
+            });
+            navigator.mediaSession.setActionHandler('play', () => activeAudioEl.play());
+            navigator.mediaSession.setActionHandler('pause', () => activeAudioEl.pause());
+            navigator.mediaSession.setActionHandler('nexttrack', () => fetchLastFmData(true));
+        }
+
+        fetchLastFmData();
+        setInterval(updateTimer, 5000);
+        setInterval(fetchLastFmData, 15000);
+    });
 })();

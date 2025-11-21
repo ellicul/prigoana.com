@@ -1,324 +1,418 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIGOANA.COM</title>
     <link rel="icon" type="image/x-icon" href="./favicon.png">
-    <title>prigoana.com</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <header>
-      <img width="235" src="./button/880x310.png" alt="prigoana.com" id="cache-bust-button" style="cursor: pointer;">
-      <br>
-      <br>
-      <nav aria-label="Social and identity links">
-        <a rel="me" href="mailto:eduard@prigoana.com">E-Mail</a> | <a href="https://github.com/eduardprigoana" target="_blank" rel="noopener noreferrer me">GitHub</a> | <a href="https://www.last.fm/user/eduardprigoana" target="_blank" rel="noopener noreferrer me">Last.FM</a>
-        <br>
-        <a href="https://www.instagram.com/edideaur" target="_blank" rel="noopener noreferrer me">Instagram</a> | <a href="https://musicbrainz.org/user/EduardPrigoana" target="_blank" rel="noopener noreferrer me">MusicBrainz</a> | <a href="https://keyoxide.org/aspe:keyoxide.org:EPWUKVFT36UVPLHPMJWPDVRTOA" target="_blank" rel="noopener noreferrer me">Keyoxide</a>
-      </nav>
-    </header>
-    <h1></h1>
-    <main>
-      <div id="now-playing"></div>
-      <p id="visitor-count"></p>
-      <a id="link" href="#">
-        <strong>
-          <p id="verse"></p>
-          <p id="reference"></p>
-        </strong>
-      </a>
-      <h2>Services</h2>
-      <ul>
-        <li>
-          <a href="https://m3u.prigoana.com">M3U IPTV playlist with over 50,000 individual channels</a>
-        </li>
-      </ul>
-      <h2>Guides</h2>
-      <details>
-        <summary>Ad Blocking</summary>
-        <p> Browsers: install <a href="https://ublockorigin.com/">uBlock Origin</a> or <a href="https://github.com/uBlockOrigin/uBOL-home">uBO lite</a>
-          <br> iOS: install <a href="https://adguard.com/en/adguard-ios/overview.html?source=ag_products_page">AdGuard</a>
-          <br> All Devices: use a DNS blocker like nextdns. You can find mine below. It blocks requests before they get on your device.
-        </p>
-      </details>
-      <details>
-        <summary>Cracked Spotify</summary>
-        <p> Android: install <a href="https://github.com/Team-xManager/xManager">xManager</a>
-          <br> iOS: <a href="https://sideload.wiki">sideload</a>
-          <a href="https://spotc.yodaluca.dev/">SpotC++</a>
-          <br> Windows: install <a href="https://github.com/SpotX-Official/SpotX">SpotX</a> Linux/Mac: install <a href="https://github.com/SpotX-Official/SpotX-Bash">SpotX Bash</a> Browser: Follow the guide above
-        </p>
-      </details>
-      <details>
-        <summary>NextDNS Setup Instructions</summary>
-        <div class="container">
-          <p>No logs, unlimited queries, iOS Revoke protection. code 7af1b9</p>
-          <div class="dropdown-container">
-            <label for="device-select">Select your device:</label>
-            <select id="device-select">
-              <option value="">Select a device</option>
-              <option value="android">Android</option>
-              <option value="ios">iOS</option>
-              <option value="windows">Windows</option>
-              <option value="macos">macOS</option>
-              <option value="linux">Linux</option>
-              <option value="chromeos">ChromeOS</option>
-              <option value="browsers">Browsers</option>
-              <option value="routers">NextDNS for Routers</option>
-              <option value="pfsense">pfSense</option>
-              <option value="mikrotik">MikroTik</option>
-            </select>
-          </div>
-          <div id="instructions" class="instruction-section"></div>
-        </div>
-      </details>
-      <h2>Links</h2>
-      <ul>
-        <li>
-          <a href="https://monochrome.tf/">Monochrome</a> (Free music streaming from tidal)
-        </li>
-        <li>
-          <a href="https://fmhy.net">FMHY</a> (Lots of free stuff)
-        </li>
-        <li>
-          <a href="https://artistgrid.cx">ArtistGrid</a> (Unreleased music)
-        </li>
-        <li>
-          <a href="https://g-meh.com/">G-Meh</a> (Free VSTs and DAWs)
-        </li>
-        <li>
-          <a href="https://audioz.download">AudioZ</a> (Free VSTs and Drumkits)
-        </li>
-        <li>
-          <a href="https://dxsign.cc/">DxSign</a> and the <a href="https://sideload.wiki/">Sideload Wiki</a> (Cheap apple signing certificates and how to use them)
-        </li>
-        <li>
-          <a href="https://pstream.org/">P-Stream</a> (Free movies and TV shows)
-        </li>
-        <li>
-          <a href="https://paramore.su/">GenP</a> and <a href="https://wiki.dbzer0.com/genp-guides/guide/#guide-2">its wiki</a> (Adobe Products)
-        </li>
-        <li>
-          <a href="https://github.com/Zopolis4/AS2WB">AS2WB</a> (Extension/Userscript that automatically saves each page you visit to the Internet Archive)
-        </li>
-        <li>
-          <a href="https://archiveteam.org/">ArchiveTeam</a> and <a href="https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior">Warrior</a> (Information on archiving the internet)
-        </li>
-        <li>
-          <a href="https://massgrave.dev/">Massgrave</a> (Windows/Office activation scripts)
-        </li>
-        <li>
-          <a href="https://eff.org/">EFF</a> (Fights for digital rights and online privacy)
-        </li>
-        <li>
-          <a href="https://protonvpn.com/">Proton</a> and <a href="https://mullvad.net/">Mullvad</a> (VPN services I recommend and trust)
-        </li>
-        <li>
-          <a href="https://harmony.pulsewidth.org.uk/">Harmony</a> (Tool to import music from DSPs to MusicBrainz and Last.fm)
-        </li>
-        <li>
-          <a href="https://fightchatcontrol.eu/">Fight Chat Control</a>
-        </li>
-        <li>
-          <a href="cfwaifu.com">CFWaifu</a> and <a href="https://cfw.guide">cfw.guide</a> (Homebrew and modding guides)
-        </li>
-        <li>
-          <a href="https://www.orwell.org/">Orwell</a> and <a href="https://www.verity.news/">Verity</a> (Only news I trust)
-        </li>
-      </ul>
-      <h2>Licences</h2>
-      <details>
-        <summary>WinRAR</summary>
-        <p> download <a href="./files/rarreg.key" download>rarreg.key</a> OR <a href="https://winrar.prigoana.com">generate your own</a> (you can either place the rarreg.key file in <code>%APPDATA%\WinRAR</code> or <code>C:\Program Files\WinRAR</code> or you can drag it into your WinRAR window) </p>
-      </details>
-      <details>
-        <summary>YogaDNS</summary>
-        <p> license key: <code class="highlightable">L8540-N1O28-6JT3D-SCSE6-6SNIF</code> and you can use any name <br>Go to Help > License key and paste it in <br>Generated with Proxifier/YogaDNS Keygen by RadiXX11
-        </p>
-      </details>
-      <details>
-        <summary>Revo Uninstaller Pro</summary>
-        <p> download <a href="./files/revouninstallerpro5.lic" download>revouninstallerpro5.lic</a> and place in <code>C:\ProgramData\VS Revo Group\Revo Uninstaller Pro</code>
-        </p>
-      </details>
-      <details>
-        <summary>Visual Studio</summary>
-        <p> Go to Help > Register Visual Studio > Unlock with a Product Key and enter the following key for your version:
-          <br> Enterprise 2026 - <code class="highlightable">VYGRN-WPR22-HG4X3-692BF-QGT2V</code>
-          <br> Professional 2026 - <code class="highlightable">NVTDK-QB8J9-M28GR-92BPC-BTHXK</code>
-          <br> Enterprise 2022 - <code class="highlightable">VHF9H-NXBBB-638P6-6JHCY-88JWH</code>
-          <br> Professional 2022 - <code class="highlightable">TD244-P4NB7-YQ6XK-Y8MMM-YWV2J</code>
-          <br> Enterprise 2019 - <code class="highlightable">BF8Y8-GN2QH-T84XB-QVY3B-RC4DF</code>
-          <br> Professional 2019 - <code class="highlightable">NYWVH-HT4XC-R2WYW-9Y3CM-X4V3Y</code>
-          <br> Keys provided by <a href="https://massgrave.dev/unsupported_products_activation#visual-studio">Massgrave</a>
-        </p>
-      </details>
-      <details>
-        <summary>SQL Server</summary>
-        <p> SQL Server 2022 Enterprise - <code class="highlightable">J4V48-P8MM4-9N3J9-HD97X-DYMRM</code>
-          <br> SQL Server 2022 Enterprise Core - <code class="highlightable">2Q48Q-PB48J-DRCVN-GB844-X2H4Q</code>
-          <br> SQL Server 2022 Standard - <code class="highlightable">FG86G-CHH2T-CB7NJ-XT7D2-V8V4X</code>
-          <br> SQL Server 2022 Web - <code class="highlightable">2R97W-F4XNT-T6MYV-3TKB7-6X3JM</code>
-          <br> SQL Server 2022 Developer - <code class="highlightable">22222-00000-00000-00000-00000</code>
-          <br> SQL Server 2019 Enterprise - <code class="highlightable">HMWJ3-KY3J2-NMVD7-KG4JR-X2G8G</code>
-          <br> SQL Server 2019 Standard - <code class="highlightable">PMBDC-FXVM3-T777P-N4FY8-PKFF4</code>
-          <br> Keys provided by <a href="https://massgrave.dev/unsupported_products_activation#sql-server">Massgrave</a>
-        </p>
-      </details>
-      <details>
-        <summary>Microsoft Configuration Manager</summary>
-        <p> License Key: <code class="highlightable">BXH69-M62YX-QQD6R-3GPWX-8WMFY</code>
-          <br> Keys provided by <a href="https://massgrave.dev/unsupported_products_activation#microsoft-configuration-manager">Massgrave</a>
-        </p>
-      </details>
-      <h2>Webrings</h2>
-      <p>
-        <a href="https://xn--sr8hvo.ws/previous" aria-label="Previous IndieWeb site">←</a>
-        <a href="https://xn--sr8hvo.ws">IndieWeb</a>
-        <a href="https://xn--sr8hvo.ws/random">?</a>
-        <a href="https://xn--sr8hvo.ws/next" aria-label="Next IndieWeb site">→</a>
-        <br>
-        <a href="https://baccyflap.com/noai/?prv&s=prg" target="_top" aria-label="Previous No AI site">←</a>
-        <a href="https://baccyflap.com/noai" target="_blank" rel="noopener noreferrer">No AI</a>
-        <a href="https://baccyflap.com/noai/?rnd">?</a>
-        <a href="https://baccyflap.com/noai/?nxt&s=prg" target="_top" aria-label="Next No AI site">→</a>
-        <br>
-        <a href="https://webmasterwebring.netlify.app?prigoana-previous">&larr;</a>
-        <a href="https://webmasterwebring.netlify.app">Webmaster</a>
-        <a href="https://webmasterwebring.netlify.app?prigoana-random">?</a>
-        <a href="https://webmasterwebring.netlify.app?prigoana-next">&rarr;</a>
-        <br>
-        <a href="https://webring.bucketfish.me/redirect.html?to=prev&name=prigoana.com">←</a>
-        <a href="https://webring.bucketfish.me/">Bucket</a>
-        <a href="https://webring.bucketfish.me/redirect.html?to=random&name=prigoana.com">?</a>
-        <a href="https://webring.bucketfish.me/redirect.html?to=next&name=prigoana.com">→</a>
-        <br>
-        <a href="https://hotlinewebring.club/prigoana/previous">←</a>
-        <a href="https://hotlinewebring.club/">Hotline</a>
-        <a href="https://hotlinewebring.club/prigoana/next">→</a>
-        <br>
-        <a href="https://teethinvitro.neocities.org/webring/linuxring/redirect/prigoprev.html">←</a>
-        <a href="https://teethinvitro.neocities.org/webring/linuxring">*nixRing</a>
-        <a href="https://teethinvitro.neocities.org/webring/linuxring/redirect/prigonext.html">→</a>
-        <br>
+    <link rel="stylesheet" href="./styles.css">
 
-      </p>
-    </main>
-    <div class="h-card" hidden>
-      <span class="p-name">prigoana.com</span>
-      <img class="u-photo" src="./button/880x310.png" alt="">
-      <a class="u-url" rel="me" href="https://prigoana.com">https://prigoana.com</a>
-    </div>
-    <a href="https://monochrome.tf" class="modal-trigger">
-      <img src="https://monochrome.tf/assets/button/880x310.png" height="31px"alt="Free Music Streaming">
-    </a>
-    <a href="https://fmhy.net/" class="modal-trigger">
-      <img src="./buttons/fmhy88x31.png" height="31px"alt="Free Shit">
-    </a>
-    <a href="https://www.headphonesty.com/2024/12/spotify-ceo-becomes-richer-musician-history/" class="modal-trigger" data-modal-id="shitify">
-      <img src="./buttons/shitify.gif" alt="Shitify - Spotify is bad for artists">
-    </a>
-    <a href="https://prigoana.com/" class="modal-trigger" data-modal-id="prigoana-button">
-      <img src="./button/88x31.png" alt="prigoana.com 88x31 button">
-    </a>
-    <a href="https://wiki.archlinux.org/title/Arch-based_distributions" class="modal-trigger" data-modal-id="arch">
-      <img src="./buttons/archlinux.gif" alt="CachyOS - An Arch Linux based distribution">
-    </a>
-    <a href="https://lucida.to/" class="modal-trigger" data-modal-id="lucida">
-      <img src="./buttons/lucida.png" alt="lucida.to button">
-    </a>
-    <a href="https://github.com/dani-garcia/vaultwarden" class="modal-trigger" data-modal-id="bitwarden">
-      <img src="./buttons/bitwarden.gif" alt="Vaultwarden, a self-hosted Bitwarden server">
-    </a>
-    <a href="https://browsers.avoidthehack.com/" class="modal-trigger" data-modal-id="chrome">
-      <img src="./buttons/chrome.gif" alt="Anti-Chrome button">
-    </a>
-    <a href="https://sad.ovh">
-      <img src="https://sad.ovh/assets/binkies/sadovh.png">
-    </a>
-    <a href="https://www.orwell.org/google-chrome-lovingly-spies-on-your-browser-history-and-it-would-like-a-word-with-you/" class="modal-trigger" data-modal-id="chromeevil">
-      <img src="./buttons/chromeevil.gif" alt="Chrome is Evil button">
-    </a>
-    <a href="https://thefire.org/" class="modal-trigger" data-modal-id="freespeech">
-      <img src="./buttons/freespeech.gif" alt="Free speech button">
-    </a>
-    <a href="https://grapheneos.org/" class="modal-trigger" data-modal-id="grapheneos">
-      <img src="./buttons/grapheneos.gif" alt="GrapheneOS button">
-    </a>
-    <a href="https://www.home-assistant.io/" class="modal-trigger" data-modal-id="home-assistant">
-      <img src="./buttons/home-assistant.gif" alt="Home Assistant button">
-    </a>
-    <a href="https://hacks.guide/" class="modal-trigger" data-modal-id="homebrew">
-      <img src="./buttons/homebrew.png" alt="Nintendo Homebrew guide button">
-    </a>
-    <a href="https://archive.org/" class="modal-trigger" data-modal-id="internetarchive">
-      <img src="./buttons/internetarchive.gif" alt="Internet Archive button">
-    </a>
-    <a href="https://fmhy.net/privacy" class="modal-trigger" data-modal-id="internetprivacy">
-      <img src="./buttons/internetprivacy.gif" alt="Internet Privacy button">
-    </a>
-    <a href="https://libreboot.org/" class="modal-trigger" data-modal-id="libreboot">
-      <img src="./buttons/libreboot.gif" alt="Libreboot button">
-    </a>
-    <a href="https://www.getmonero.org/" class="modal-trigger" data-modal-id="monero">
-      <img src="./buttons/monero-now.gif" alt="Monero - the private digital currency">
-    </a>
-    <a href="https://wiki.prigoana.com/wiki/Parental_Advisory" class="modal-trigger" data-modal-id="parentaladvisory">
-      <img src="./buttons/parentaladvisory.png" alt="Parental Advisory Explicit Content">
-    </a>
-    <a href="https://fmhy.net/" class="modal-trigger" data-modal-id="piracy">
-      <img src="./buttons/piracy.gif" alt="Piracy button">
-    </a>
-    <a href="https://repair.eu/" class="modal-trigger" data-modal-id="right2repair">
-      <img src="./buttons/right2repair.png" alt="Right to Repair Europe button">
-    </a>
-    <a href="https://nicotine-plus.org/" class="modal-trigger" data-modal-id="soulseek">
-      <img src="./buttons/soulseek.gif" alt="Soulseek button">
-    </a>
-    <a href="https://ublockorigin.com/" class="modal-trigger" data-modal-id="ublock">
-      <img src="./buttons/ublock.png" alt="uBlock Origin button">
-    </a>
-    <a href="https://wiki.prigoana.com/" class="modal-trigger" data-modal-id="wikipedia">
-      <img src="./buttons/wikipedia.gif" alt="Personal Wiki button">
-    </a>
-    <div id="infoModal" class="modal">
-      <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h2 id="modal-title"></h2>
-        <p id="modal-thoughts"></p>
-        <div id="modal-links"></div>
-      </div>
-    </div>
-    <audio id="bg-audio-1" preload="auto" muted></audio>
-    <audio id="bg-audio-2" preload="auto" muted></audio>
     <script src="./scripts/bible.js" defer></script>
     <script src="./scripts/music.js" defer></script>
     <script src="./scripts/nextdns.js" defer></script>
     <script src="./scripts/count.js" defer></script>
-    <script src="./scripts/highlight.js" defer></script>
-    <script src="./scripts/modal.js" defer></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./scripts/service-worker.js').then(() => console.log('Service Worker registered')).catch(err => console.error('Service Worker registration failed:', err));
-        });
-      }
-    </script>
-    <script>
-      const cacheBustButton = document.getElementById('cache-bust-button');
-      if (cacheBustButton) {
-        cacheBustButton.addEventListener('click', () => {
-          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-              action: 'clear_cache_and_reload'
-            });
-          }
-        });
-      }
-    </script>
-    <script defer data-domain="prigoana.com" src="https://plausible.canine.tools/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
-<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+    <script src="./scripts/style.js" defer></script>
 
-  </body>
+    <script defer data-domain="prigoana.com" src="https://plausible.canine.tools/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+    <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+    <div class="noise"></div>
+    <div class="frame">
+
+        <div class="marquee-wrap" onclick="window.open('https://pillows.su/f/542396c282a7fdcdeebc64bad225d508', '_blank')">
+            <div class="marquee-content">
+                MY BABY, SHE RAN AWAY // BUT FIRST SHE TRIED TO GET ME COMMITTED // NOT GOING TO THE HOSPITAL, 'CAUSE I AM NOT SICK // I JUST DO NOT GET IT // SHE WANT ME TO SAY WHEN I FINISH // I'M MAKING HER SQUIRT WHEN I'M IN IT // SHE'S HAVING A PANIC ATTACK, AND SHE IS NOT LIKING THE WAY THAT I TWEETED // UNTIL BIANCA'S BACK, I STAY UP ALL NIGHT, I'M NOT GOING TO SLEEP // I REALLY DON'T KNOW WHERE SHE'S AT // I'M TRACKING MY BITCH THROUGH AN APP // I'M TRACKING MY BITCH THROUGH THE CITY // I GUESS WE THE NEW CASSIE AND DIDDY
+            </div>
+        </div>
+
+        <header class="reveal-on-scroll">
+            <div>
+                <h1 id="glitchText" data-text="PRIGOANA.COM">PRIGOANA.COM</h1>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <div style="border: 1px solid #fff; padding: 4px 10px; font-size: 0.75rem; font-weight: bold; background: rgba(255,255,255,0.05);">
+                        <span id="visitor-count">VISITORS: <span style="animation: blink 0.5s infinite alternate;">...</span></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav aria-label="Social and identity links" class="reveal-on-scroll">
+            <a href="mailto:eduard@prigoana.com" rel="me">E-Mail</a>
+            <a href="https://github.com/eduardprigoana" target="_blank" rel="noopener noreferrer me">GitHub</a>
+            <a href="https://www.last.fm/user/eduardprigoana" target="_blank" rel="noopener noreferrer me">Last.FM</a>
+            <a href="https://www.instagram.com/edideaur" target="_blank" rel="noopener noreferrer me">Instagram</a>
+            <a href="https://musicbrainz.org/user/EduardPrigoana" target="_blank" rel="noopener noreferrer me">MusicBrainz</a>
+            <a href="https://keyoxide.org/aspe:keyoxide.org:EPWUKVFT36UVPLHPMJWPDVRTOA" target="_blank" rel="noopener noreferrer me">Keyoxide</a>
+        </nav>
+
+        <div class="grid-layout">
+
+            <aside class="reveal-on-scroll">
+
+                <div class="widget">
+                    <span class="widget-title">SCRIPTURE</span>
+                    <a id="link" href="#" style="display: block; margin-top: 10px;">
+                        <strong>
+                            <p id="verse" style="font-size: 0.8rem; font-style: italic; margin-bottom: 5px; color: #bbb; border-left: 2px solid #333; padding-left: 10px;">Loading verse...</p>
+                            <p id="reference" style="font-size: 0.7rem; text-align: right; font-weight: bold; color: var(--accent);">>_ REVELATION</p>
+                        </strong>
+                    </a>
+                </div>
+
+                <div class="widget">
+                    <span class="widget-title">LAST PLAYED SONG</span>
+                    <div id="now-playing" class="skeleton">
+                        <div class="player-card">
+                            <div class="player-art-container">
+                                <img id="np-art" class="player-art" src="" alt="Album Art">
+                            </div>
+                            <div class="player-info">
+                                <a id="np-track" class="player-track fade-text" href="#" target="_blank">Loading...</a>
+                                <a id="np-artist" class="player-artist fade-text" href="#" target="_blank"></a>
+                                <a id="np-album" class="player-album fade-text" href="#" target="_blank"></a>
+                                <div class="player-controls">
+                                    <span id="np-time" class="fade-text">Fetching...</span>
+                                    <span id="inline-play-button" class="play-btn" title="Play Preview">▶</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <span class="widget-title">DONATIONS</span>
+
+                    <div class="crypto-item">
+                        <div class="crypto-header" onclick="toggleCrypto(this)">
+                            <span>BITCOIN (BTC)</span>
+                            <span class="crypto-toggle">[+]</span>
+                        </div>
+                        <div class="crypto-content">
+                            <div class="crypto-address-display">bc1qn3ufzs4nk62lhfykx78atzjxx8hxptzmrm0ckr</div>
+                            <div class="crypto-actions">
+                                <button class="crypto-btn" onclick="copyAddress(this, 'bc1qn3ufzs4nk62lhfykx78atzjxx8hxptzmrm0ckr')">COPY</button>
+                                <button class="crypto-btn" onclick="showQR(this, 'bc1qn3ufzs4nk62lhfykx78atzjxx8hxptzmrm0ckr')">QR CODE</button>
+                            </div>
+                            <div class="qr-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="crypto-item">
+                        <div class="crypto-header" onclick="toggleCrypto(this)">
+                            <span>ETHEREUM (ETH)</span>
+                            <span class="crypto-toggle">[+]</span>
+                        </div>
+                        <div class="crypto-content">
+                            <div class="crypto-address-display">0x0b39d5D190fDB127d13458bd2086cDf950D3034C</div>
+                            <div class="crypto-actions">
+                                <button class="crypto-btn" onclick="copyAddress(this, '0x0b39d5D190fDB127d13458bd2086cDf950D3034C')">COPY</button>
+                                <button class="crypto-btn" onclick="showQR(this, '0x0b39d5D190fDB127d13458bd2086cDf950D3034C')">QR CODE</button>
+                            </div>
+                            <div class="qr-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="crypto-item">
+                        <div class="crypto-header" onclick="toggleCrypto(this)">
+                            <span>LITECOIN (LTC)</span>
+                            <span class="crypto-toggle">[+]</span>
+                        </div>
+                        <div class="crypto-content">
+                            <div class="crypto-address-display">ltc1q88kpywg3jxxg0jsx9c4e9d8gqs7p07fqptjgtv</div>
+                            <div class="crypto-actions">
+                                <button class="crypto-btn" onclick="copyAddress(this, 'ltc1q88kpywg3jxxg0jsx9c4e9d8gqs7p07fqptjgtv')">COPY</button>
+                                <button class="crypto-btn" onclick="showQR(this, 'ltc1q88kpywg3jxxg0jsx9c4e9d8gqs7p07fqptjgtv')">QR CODE</button>
+                            </div>
+                            <div class="qr-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="crypto-item">
+                        <div class="crypto-header" onclick="toggleCrypto(this)">
+                            <span>MONERO (XMR)</span>
+                            <span class="crypto-toggle">[+]</span>
+                        </div>
+                        <div class="crypto-content">
+                            <div class="crypto-address-display">bc1qn3ufzs4nk62lhfykx78atzjxx8hxptzmrm0ckr</div>
+                            <div class="crypto-actions">
+                                <button class="crypto-btn" onclick="copyAddress(this, 'bc1qn3ufzs4nk62lhfykx78atzjxx8hxptzmrm0ckr')">COPY</button>
+                                <button class="crypto-btn" onclick="showQR(this, 'bc1qn3ufzs4nk62lhfykx78atzjxx8hxptzmrm0ckr')">QR CODE</button>
+                            </div>
+                            <div class="qr-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <span class="widget-title">WEBRINGS</span>
+                    <div class="webring-sidebar">
+                        <a href="https://xn--sr8hvo.ws/previous" aria-label="Previous IndieWeb site">←</a>
+                        <a href="https://xn--sr8hvo.ws">IndieWeb</a>
+                        <a href="https://xn--sr8hvo.ws/random">?</a>
+                        <a href="https://xn--sr8hvo.ws/next" aria-label="Next IndieWeb site">→</a>
+                        <br>
+                        <a href="https://baccyflap.com/noai/?prv&s=prg" target="_top" aria-label="Previous No AI site">←</a>
+                        <a href="https://baccyflap.com/noai" target="_blank" rel="noopener noreferrer">No AI</a>
+                        <a href="https://baccyflap.com/noai/?rnd">?</a>
+                        <a href="https://baccyflap.com/noai/?nxt&s=prg" target="_top" aria-label="Next No AI site">→</a>
+                        <br>
+                        <a href="https://webmasterwebring.netlify.app?prigoana-previous">&larr;</a>
+                        <a href="https://webmasterwebring.netlify.app">Webmaster</a>
+                        <a href="https://webmasterwebring.netlify.app?prigoana-random">?</a>
+                        <a href="https://webmasterwebring.netlify.app?prigoana-next">&rarr;</a>
+                        <br>
+                        <a href="https://webring.bucketfish.me/redirect.html?to=prev&name=prigoana.com">←</a>
+                        <a href="https://webring.bucketfish.me/">Bucket</a>
+                        <a href="https://webring.bucketfish.me/redirect.html?to=random&name=prigoana.com">?</a>
+                        <a href="https://webring.bucketfish.me/redirect.html?to=next&name=prigoana.com">→</a>
+                        <br>
+                        <a href="https://hotlinewebring.club/prigoana/previous">←</a>
+                        <a href="https://hotlinewebring.club/">Hotline</a>
+                        <a href="https://hotlinewebring.club/prigoana/next">→</a>
+                        <br>
+                        <a href="https://teethinvitro.neocities.org/webring/linuxring/redirect/prigoprev.html">←</a>
+                        <a href="https://teethinvitro.neocities.org/webring/linuxring">*nixRing</a>
+                        <a href="https://teethinvitro.neocities.org/webring/linuxring/redirect/prigonext.html">→</a>
+                    </div>
+                </div>
+            </aside>
+
+            <main>
+
+                <section id="projects" class="section-block reveal-on-scroll">
+                    <div class="section-head">
+                        <h2>PROJECTS</h2>
+                        <span style="color: var(--border-light)">01</span>
+                    </div>
+
+                    <a href="https://artistgrid.cx/" target="_blank" class="project-card">
+                        <div class="card-header">
+                            <span>ARTISTGRID.CX</span>
+                            <span style="color: var(--accent);">[LIVE]</span>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <p class="project-desc">Site listing unreleased music trackers.</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://monochrome.tf/" target="_blank" class="project-card">
+                        <div class="card-header">
+                            <span>MONOCHROME.TF</span>
+                            <span style="color: var(--accent);">[LIVE]</span>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <p class="project-desc">Free, open-source music streaming from Tidal. Minimalist design.</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://m3u.prigoana.com" target="_blank" class="project-card">
+                        <div class="card-header">
+                            <span>M3U</span>
+                            <span style="color: var(--accent);">[LIVE]</span>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <p class="project-desc">M3U IPTV playlist with over 50,000 individual channels.</p>
+                            </div>
+                        </div>
+                    </a>
+                </section>
+
+                <section id="guides" class="section-block reveal-on-scroll">
+                    <div class="section-head">
+                        <h2>GUIDES</h2>
+                        <span style="color: var(--border-light)">02</span>
+                    </div>
+
+                    <details>
+                        <summary>Ad Blocking</summary>
+                        <div class="details-content">
+                            <p>Browsers: install <a href="https://ublockorigin.com/">uBlock Origin</a> or <a href="https://github.com/uBlockOrigin/uBOL-home">uBO lite</a>
+                            <br>iOS: install <a href="https://adguard.com/en/adguard-ios/overview.html?source=ag_products_page">AdGuard</a>
+                            <br>All Devices: use a DNS blocker like nextdns. You can find mine below. It blocks requests before they get on your device.</p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>Cracked Spotify</summary>
+                        <div class="details-content">
+                            <p>Android: install <a href="https://github.com/Team-xManager/xManager">xManager</a>
+                            <br>iOS: <a href="https://sideload.wiki">sideload</a> <a href="https://spotc.yodaluca.dev/">SpotC++</a>
+                            <br>Windows: install <a href="https://github.com/SpotX-Official/SpotX">SpotX</a>
+                            <br>Linux/Mac: install <a href="https://github.com/SpotX-Official/SpotX-Bash">SpotX Bash</a>
+                            <br>Browser: Follow the guide above</p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>NextDNS Setup Instructions</summary>
+                        <div class="details-content">
+                            <div class="container">
+                                <p>No logs, unlimited queries, iOS Revoke protection. code <span class="highlightable" data-copy="7af1b9">7af1b9<span class="copy-feedback">COPIED</span></span></p>
+                                <div class="dropdown-container">
+                                    <label for="device-select" style="color:#888; font-size:0.8rem;">Select your device:</label>
+                                    <select id="device-select">
+                                        <option value="">> Select a device</option>
+                                        <option value="android">Android</option>
+                                        <option value="ios">iOS</option>
+                                        <option value="windows">Windows</option>
+                                        <option value="macos">macOS</option>
+                                        <option value="linux">Linux</option>
+                                        <option value="chromeos">ChromeOS</option>
+                                        <option value="browsers">Browsers</option>
+                                        <option value="routers">NextDNS for Routers</option>
+                                        <option value="pfsense">pfSense</option>
+                                        <option value="mikrotik">MikroTik</option>
+                                    </select>
+                                </div>
+                                <div id="instructions" class="instruction-section"></div>
+                            </div>
+                        </div>
+                    </details>
+                </section>
+
+                <section id="warehouse" class="section-block reveal-on-scroll">
+                    <div class="section-head">
+                        <h2>LINKS</h2>
+                        <span style="color: var(--border-light)">03</span>
+                    </div>
+                    <ul class="resource-list">
+                        <li><a href="https://monochrome.tf/">Monochrome</a> <span>(Free music streaming from tidal)</span></li>
+                        <li><a href="https://fmhy.net">FMHY</a> <span>(Lots of free stuff)</span></li>
+                        <li><a href="https://artistgrid.cx">ArtistGrid</a> <span>(Unreleased music)</span></li>
+                        <li><a href="https://g-meh.com/">G-Meh</a> <span>(Free VSTs and DAWs)</span></li>
+                        <li><a href="https://audioz.download">AudioZ</a> <span>(Free VSTs and Drumkits)</span></li>
+                        <li><a href="https://dxsign.cc/">DxSign</a> and <a href="https://sideload.wiki/">Sideload Wiki</a> <span>(Cheap apple signing certificates)</span></li>
+                        <li><a href="https://pstream.org/">P-Stream</a> <span>(Free movies and TV shows)</span></li>
+                        <li><a href="https://paramore.su/">GenP</a> <span>(Adobe Products)</span></li>
+                        <li><a href="https://github.com/Zopolis4/AS2WB">AS2WB</a> <span>(Auto-save to Internet Archive)</span></li>
+                        <li><a href="https://archiveteam.org/">ArchiveTeam</a> <span>(Internet archiving)</span></li>
+                        <li><a href="https://massgrave.dev/">Massgrave</a> <span>(Windows activation scripts)</span></li>
+                        <li><a href="https://eff.org/">EFF</a> <span>(Digital rights)</span></li>
+                        <li><a href="https://protonvpn.com/">Proton</a> / <a href="https://mullvad.net/">Mullvad</a> <span>(VPN services)</span></li>
+                        <li><a href="https://harmony.pulsewidth.org.uk/">Harmony</a> <span>(MusicBrainz import tool)</span></li>
+                        <li><a href="https://fightchatcontrol.eu/">Fight Chat Control</a></li>
+                        <li><a href="cfwaifu.com">CFWaifu</a> <span>(Console Modding)</span></li>
+                        <li><a href="https://www.orwell.org/">Orwell</a> / <a href="https://verity.news/">Verity News</a> <span>(News)</span></li>
+                    </ul>
+                </section>
+
+                <section id="licenses" class="section-block reveal-on-scroll">
+                    <div class="section-head">
+                        <h2>LICENCES</h2>
+                        <span style="color: var(--border-light)">04</span>
+                    </div>
+
+                    <details>
+                        <summary>WinRAR</summary>
+                        <div class="details-content">
+                            <p>download <a href="./files/rarreg.key" download>rarreg.key</a> OR <a href="https://winrar.prigoana.com">generate your own</a> (drag into WinRAR window)</p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>YogaDNS</summary>
+                        <div class="details-content">
+                            <p>license key: <code class="highlightable" data-copy="L8540-N1O28-6JT3D-SCSE6-6SNIF">L8540-N1O28-6JT3D-SCSE6-6SNIF<span class="copy-feedback">COPIED</span></code><br>Go to Help > License key</p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>Revo Uninstaller Pro</summary>
+                        <div class="details-content">
+                            <p>download <a href="./files/revouninstallerpro5.lic" download>revouninstallerpro5.lic</a> and place in <code>C:\ProgramData\VS Revo Group\Revo Uninstaller Pro</code></p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>Visual Studio</summary>
+                        <div class="details-content">
+                            <p>Help > Register > Unlock with Product Key:
+                            <br>Ent 2026: <code class="highlightable" data-copy="VYGRN-WPR22-HG4X3-692BF-QGT2V">VYGRN-WPR22-HG4X3-692BF-QGT2V<span class="copy-feedback">COPIED</span></code>
+                            <br>Pro 2026: <code class="highlightable" data-copy="NVTDK-QB8J9-M28GR-92BPC-BTHXK">NVTDK-QB8J9-M28GR-92BPC-BTHXK<span class="copy-feedback">COPIED</span></code>
+                            <br>Ent 2022: <code class="highlightable" data-copy="VHF9H-NXBBB-638P6-6JHCY-88JWH">VHF9H-NXBBB-638P6-6JHCY-88JWH<span class="copy-feedback">COPIED</span></code>
+                            <br>Pro 2022: <code class="highlightable" data-copy="TD244-P4NB7-YQ6XK-Y8MMM-YWV2J">TD244-P4NB7-YQ6XK-Y8MMM-YWV2J<span class="copy-feedback">COPIED</span></code>
+                            <br>Ent 2019: <code class="highlightable" data-copy="BF8Y8-GN2QH-T84XB-QVY3B-RC4DF">BF8Y8-GN2QH-T84XB-QVY3B-RC4DF<span class="copy-feedback">COPIED</span></code></p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>SQL Server</summary>
+                        <div class="details-content">
+                            <p>SQL 2022 Ent: <code class="highlightable" data-copy="J4V48-P8MM4-9N3J9-HD97X-DYMRM">J4V48-P8MM4-9N3J9-HD97X-DYMRM<span class="copy-feedback">COPIED</span></code>
+                            <br>SQL 2022 Ent Core: <code class="highlightable" data-copy="2Q48Q-PB48J-DRCVN-GB844-X2H4Q">2Q48Q-PB48J-DRCVN-GB844-X2H4Q<span class="copy-feedback">COPIED</span></code>
+                            <br>SQL 2022 Std: <code class="highlightable" data-copy="FG86G-CHH2T-CB7NJ-XT7D2-V8V4X">FG86G-CHH2T-CB7NJ-XT7D2-V8V4X<span class="copy-feedback">COPIED</span></code>
+                            <br>SQL 2022 Web: <code class="highlightable" data-copy="2R97W-F4XNT-T6MYV-3TKB7-6X3JM">2R97W-F4XNT-T6MYV-3TKB7-6X3JM<span class="copy-feedback">COPIED</span></code>
+                            <br>SQL 2022 Dev: <code class="highlightable" data-copy="22222-00000-00000-00000-00000">22222-00000-00000-00000-00000<span class="copy-feedback">COPIED</span></code></p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>Microsoft Config Manager</summary>
+                        <div class="details-content">
+                            <p>Key: <code class="highlightable" data-copy="BXH69-M62YX-QQD6R-3GPWX-8WMFY">BXH69-M62YX-QQD6R-3GPWX-8WMFY<span class="copy-feedback">COPIED</span></code></p>
+                        </div>
+                    </details>
+                </section>
+
+            </main>
+        </div>
+
+        <footer class="reveal-on-scroll">
+
+            <div class="h-card" hidden>
+                <span class="p-name">prigoana.com</span>
+                <img class="u-photo" src="./button/880x310.png" alt="">
+                <a class="u-url" rel="me" href="https://prigoana.com">https://prigoana.com</a>
+            </div>
+
+            <div class="badge-grid">
+                <a href="https://monochrome.tf" target="_blank"><img src="https://monochrome.tf/assets/button/880x310.png" height="31px" alt="Free Music Streaming"></a>
+                <a href="https://fmhy.net/" target="_blank"><img src="./buttons/fmhy88x31.png" height="31px" alt="Free Shit"></a>
+                <a href="https://www.headphonesty.com/2024/12/spotify-ceo-becomes-richer-musician-history/" target="_blank"><img src="./buttons/shitify.gif" alt="Shitify"></a>
+                <a href="https://prigoana.com/" target="_blank"><img src="./button/88x31.png" alt="prigoana.com"></a>
+                <a href="https://wiki.archlinux.org/" target="_blank"><img src="./buttons/archlinux.gif" alt="Arch Linux"></a>
+                <a href="https://lucida.to/" target="_blank"><img src="./buttons/lucida.png" alt="lucida.to"></a>
+                <a href="https://github.com/dani-garcia/vaultwarden" target="_blank"><img src="./buttons/bitwarden.gif" alt="Vaultwarden"></a>
+                <a href="https://browsers.avoidthehack.com/" target="_blank"><img src="./buttons/chrome.gif" alt="Anti-Chrome"></a>
+                <a href="https://sad.ovh" target="_blank"><img src="https://sad.ovh/assets/binkies/sadovh.png"></a>
+                <a href="https://www.orwell.org/" target="_blank"><img src="./buttons/chromeevil.gif" alt="Chrome is Evil"></a>
+                <a href="https://thefire.org/" target="_blank"><img src="./buttons/freespeech.gif" alt="Free speech"></a>
+                <a href="https://grapheneos.org/" target="_blank"><img src="./buttons/grapheneos.gif" alt="GrapheneOS"></a>
+                <a href="https://www.home-assistant.io/" target="_blank"><img src="./buttons/home-assistant.gif" alt="Home Assistant"></a>
+                <a href="https://hacks.guide/" target="_blank"><img src="./buttons/homebrew.png" alt="Homebrew guide"></a>
+                <a href="https://archive.org/" target="_blank"><img src="./buttons/internetarchive.gif" alt="Internet Archive"></a>
+                <a href="https://fmhy.net/privacy" target="_blank"><img src="./buttons/internetprivacy.gif" alt="Privacy"></a>
+                <a href="https://libreboot.org/" target="_blank"><img src="./buttons/libreboot.gif" alt="Libreboot"></a>
+                <a href="https://www.getmonero.org/" target="_blank"><img src="./buttons/monero-now.gif" alt="Monero"></a>
+                <a href="https://wiki.prigoana.com/" target="_blank"><img src="./buttons/parentaladvisory.png" alt="Parental Advisory"></a>
+                <a href="https://fmhy.net/" target="_blank"><img src="./buttons/piracy.gif" alt="Piracy"></a>
+                <a href="https://repair.eu/" target="_blank"><img src="./buttons/right2repair.png" alt="Right to Repair"></a>
+                <a href="https://nicotine-plus.org/" target="_blank"><img src="./buttons/soulseek.gif" alt="Soulseek"></a>
+                <a href="https://ublockorigin.com/" target="_blank"><img src="./buttons/ublock.png" alt="uBlock"></a>
+                <a href="https://wiki.prigoana.com/" target="_blank"><img src="./buttons/wikipedia.gif" alt="Wiki"></a>
+                <a href="https://en.wikipedia.org/wiki/Amen_break"><img src="./buttons/amen.avif" alt="Amen Break"></a>
+                <a href="https://greens-efa.eu/"><img src="./buttons/green.avif" alt="Green"></a>
+                <a href="https://europarl.europa.eu/"><img src="./buttons/eu.avif" alt="EU"></a>
+                <a href="https://rust-lang.org/"><img src="./buttons/rust.avif" alt="Rust"></a>
+            </div>
+
+            <p style="margin-top: 30px; font-family: var(--font-mono); opacity: 0.5;">
+                COPYLEFT PRIGOANA.COM 2025 | NO RIGHTS RESERVED
+            </p>
+        </footer>
+
+    </div>
+
+    <audio id="bg-audio-1" preload="auto" muted></audio>
+    <audio id="bg-audio-2" preload="auto" muted></audio>
+
+</body>
 </html>
