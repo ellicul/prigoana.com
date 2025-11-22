@@ -6,7 +6,7 @@
     <title>PRIGOANA.COM</title>
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <link rel="stylesheet" href="./styles.css">
-
+    <script src="./scripts/chat.js" defer></script>
     <script src="./scripts/bible.js" defer></script>
     <script src="./scripts/music.js" defer></script>
     <script src="./scripts/nextdns.js" defer></script>
@@ -81,6 +81,20 @@
                         </div>
                     </div>
                 </div>
+
+<div class="widget">
+    <span class="widget-title">CHATBOX</span>
+    <div class="chatbox-container">
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="chat-name" placeholder="Name *" maxlength="100" required>
+            <input type="text" id="chat-contact" placeholder="Email/Website" maxlength="255">
+            <input type="url" id="chat-avatar" placeholder="Avatar URL" maxlength="500">
+            <textarea id="chat-message" placeholder="Message *" maxlength="1000" required rows="2"></textarea>
+            <button type="submit" class="crypto-btn">SEND</button>
+        </form>
+    </div>
+</div>
 
                 <div class="widget">
                     <span class="widget-title">DONATIONS</span>
