@@ -34,19 +34,9 @@
         const LASTFM_USER = "eduardprigoana";
         const LASTFM_API_KEY = "816cfe50ddeeb73c9987b85de5c19e71";
         const servers = [
-            "https://wolf.qqdl.site",
-            "https://katze.qqdl.site",
-            "https://maus.qqdl.site",
-            "https://vogel.qqdl.site",
-            "https://hund.qqdl.site",
-            "https://tidal.kinoplus.online/",
-            "https://triton.squid.wtf",
-            "https://aether.squid.wtf",
-            "https://zeus.squid.wtf",
-            "https://kraken.squid.wtf",
-            "https://phoenix.squid.wtf",
-            "https://shiva.squid.wtf",
-            "https://chaos.squid.wtf"
+            "https://hifi.geeked.wtf",
+            "https://hifi-one.spotisaver.net",
+            "https://hifi-two.spotisaver.net"
         ];
 
         function formatTimeAgo(uts) {
