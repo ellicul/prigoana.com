@@ -1,3 +1,0 @@
-curl -fsSL https://bun.sh/install | bash && \
-curl -fsSL https://opencode.ai/install | bash && \
-curl -fsSL https://blackbox.ai/install.sh | bash

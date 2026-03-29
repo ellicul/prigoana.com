@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);else if(window.matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.setAttribute('data-theme','light')})()</script>
+    <style>html{background:#000}[data-theme="light"]{background:#f0f0f0}body{visibility:hidden}.vite-loaded{visibility:visible}</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRIGOANA.COM</title>
@@ -29,18 +31,14 @@
     <link rel="preconnect" href="https://ws.audioscrobbler.com" crossorigin>
     <link rel="preconnect" href="https://chat.prigoana.com" crossorigin>
 
-    <link rel="icon" type="image/x-icon" href="./favicon.png">
-    <link rel="stylesheet" href="./styles.css">
-    <script src="./scripts/chat.js" defer></script>
-    <script src="./scripts/bible.js" defer></script>
-    <script src="./scripts/music.js" defer></script>
-    <script src="./scripts/nextdns.js" defer></script>
-    <script src="./scripts/count.js" defer></script>
-    <script src="./scripts/style.js" defer></script>
+    <link rel="preconnect" href="https://fonts.coollabs.io" crossorigin>
+    <link rel="icon" type="image/x-icon" href="/favicon.png">
 
     <script defer data-domain="prigoana.com" src="https://plausible.canine.tools/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
     <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
     <script src="https://cdn.hopjs.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script type="module" src="/src/main.js"></script>
 
     <script type="application/ld+json">
     {
@@ -80,6 +78,7 @@
                     <div class="visitor-badge">
                         <span id="visitor-count" aria-live="polite">VISITORS: <span class="loading-blink">...</span></span>
                     </div>
+                    <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Toggle light/dark theme">THEME: DARK</button>
                 </div>
             </div>
         </header>

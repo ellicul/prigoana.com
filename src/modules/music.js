@@ -1,5 +1,4 @@
-(() => {
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
         const audio1 = document.getElementById("bg-audio-1");
         const audio2 = document.getElementById("bg-audio-2");
         const container = document.getElementById("now-playing");
@@ -397,4 +396,3 @@
         setInterval(updateTimer, 5000);
         setInterval(fetchLastFmData, 5000);
     });
-})();

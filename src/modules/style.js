@@ -106,3 +106,20 @@ document.addEventListener('click', (e) => {
         return;
     }
 });
+
+// Theme toggle
+const themeToggle = document.getElementById('theme-toggle');
+if (themeToggle) {
+    const getTheme = () => document.documentElement.getAttribute('data-theme') ||
+        (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    const updateToggleText = () => {
+        themeToggle.textContent = getTheme() === 'light' ? 'THEME: LIGHT' : 'THEME: DARK';
+    };
+    updateToggleText();
+    themeToggle.addEventListener('click', () => {
+        const next = getTheme() === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateToggleText();
+    });
+}

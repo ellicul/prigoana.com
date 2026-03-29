@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — PRIGOANA.COM</title>
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);else if(window.matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.setAttribute('data-theme','light')})()</script>
+    <style>
+        @import url('https://fonts.coollabs.io/css2?family=IBM+Plex+Mono:wght@400;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #000; --fg: #e0e0e0; --accent: #fff; }
+        [data-theme="light"] { --bg: #f0f0f0; --fg: #1a1a1a; --accent: #000; }
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme="dark"]) { --bg: #f0f0f0; --fg: #1a1a1a; --accent: #000; }
+        }
+        body {
+            background: var(--bg); color: var(--fg);
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; text-align: center; cursor: crosshair;
+        }
+        h1 { font-family: 'Arial Black', 'Helvetica Neue', sans-serif; font-size: clamp(3rem, 10vw, 8rem); letter-spacing: -2px; color: var(--accent); }
+        p { margin-top: 1rem; font-size: 0.9rem; }
+        a { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+        a:hover { text-decoration-style: wavy; }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>404</h1>
+        <p>PAGE NOT FOUND</p>
+        <p style="margin-top: 2rem;"><a href="/">← BACK TO PRIGOANA.COM</a></p>
+    </div>
+</body>
+</html>
