@@ -1,9 +1,12 @@
 const CHAT_API = 'https://chat.prigoana.com/api/messages';
 
 function formatTimeAgo(timestamp) {
-    const now = new Date();
-    const sentAt = new Date(timestamp);
-    const diffMs = now - sentAt;
+    if (!timestamp) return '';
+    const now = Date.now();
+    const m = String(timestamp).match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+    if (!m) return '';
+    const sentMs = Date.UTC(m[1], m[2] - 1, m[3], m[4], m[5], m[6]);
+    const diffMs = now - sentMs;
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
@@ -13,7 +16,7 @@ function formatTimeAgo(timestamp) {
     if (diffHours < 24) return `${diffHours}h`;
     if (diffDays < 7) return `${diffDays}d`;
 
-    return sentAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return new Date(sentMs).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function escapeHtml(text) {
@@ -29,7 +32,7 @@ function renderMessage(msg) {
         : '';
 
     const contactHtml = msg.contact && msg.contact.trim() !== ''
-        ? `<div class="chat-contact">→ <a href="${msg.contact.includes('@') ? 'mailto:' + msg.contact : msg.contact}" target="_blank" rel="noopener">${escapeHtml(msg.contact)}</a></div>`
+        ? `<div class="chat-contact">→ <a href="${/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(msg.contact) ? 'mailto:' + msg.contact : msg.contact}" target="_blank" rel="noopener">${escapeHtml(msg.contact)}</a></div>`
         : '';
 
     return `
@@ -49,7 +52,9 @@ async function fetchMessages() {
     const container = document.getElementById('chat-messages');
 
     try {
-        const response = await fetch(CHAT_API);
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 20000);
+        const response = await fetch(CHAT_API, { signal: controller.signal });
         if (!response.ok) throw new Error('Failed to fetch messages');
 
         const messages = await response.json();
@@ -66,12 +71,15 @@ async function fetchMessages() {
     }
 }
 
-async function sendChatMessage(name, message, contact = '', avatar = '') {
+async function postChatMessage(name, message, contact = '', avatar = '') {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 20000);
     const response = await fetch(`${CHAT_API}/post`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
+        signal: controller.signal,
         body: JSON.stringify({
             name: name.trim(),
             message: message.trim(),
@@ -132,7 +140,7 @@ function initChatbox() {
         submitBtn.textContent = 'SENDING...';
 
         try {
-            await sendChatMessage(name, message, contact, avatar);
+            await postChatMessage(name, message, contact, avatar);
             messageInput.value = '';
             await fetchMessages();
 
