@@ -2,7 +2,7 @@ const CHAT_API = 'https://chat.prigoana.com/api/messages';
 
 function formatTimeAgo(timestamp) {
     const now = new Date();
-    const sentAt = new Date(timestamp);
+    const sentAt = new Date(timestamp.replace(/(\.\d{3})\d+/, '$1'));
     const diffMs = now - sentAt;
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
