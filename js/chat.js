@@ -71,7 +71,7 @@ async function fetchMessages() {
     }
 }
 
-async function postMessage(name, message, contact = '', avatar = '') {
+async function postChatMessage(name, message, contact = '', avatar = '') {
     const controller = new AbortController();
     setTimeout(() => controller.abort(), 20000);
     const response = await fetch(`${CHAT_API}/post`, {
@@ -140,7 +140,7 @@ function initChatbox() {
         submitBtn.textContent = 'SENDING...';
 
         try {
-            await postMessage(name, message, contact, avatar);
+            await postChatMessage(name, message, contact, avatar);
             messageInput.value = '';
             await fetchMessages();
 
