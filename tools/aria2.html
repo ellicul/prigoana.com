@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>aria2 PowerShell Generator</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #eee;
+    padding: 20px;
+}
+textarea, pre {
+    width: 100%;
+    margin-top: 10px;
+}
+textarea {
+    height: 150px;
+    background: #222;
+    color: #0f0;
+    border: 1px solid #444;
+    padding: 10px;
+}
+button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+pre {
+    background: #222;
+    padding: 15px;
+    border: 1px solid #444;
+    white-space: pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<h2>aria2 PowerShell Command Generator</h2>
+
+<p>Paste download links (one per line):</p>
+
+<textarea id="links" placeholder="https://example.com/file1
+https://example.com/file2"></textarea>
+
+<br>
+<button onclick="generate()">Generate PowerShell Command</button>
+
+<h3>Output:</h3>
+<pre id="output"></pre>
+
+<script>
+function generate() {
+
+    const links = document.getElementById("links").value
+        .split("\n")
+        .map(l => l.trim())
+        .filter(l => l.length > 0);
+
+    if (links.length === 0) {
+        document.getElementById("output").innerText = "No links provided.";
+        return;
+    }
+
+    let ps = "";
+
+    ps += "$links = @(\n";
+
+    links.forEach(l => {
+        ps += `    "${l}"\n`;
+    });
+
+    ps += ")\n\n";
+
+    ps += "$links | Out-File -Encoding utf8 links.txt\n\n";
+
+    ps += "aria2c -c -x 8 -s 8 -k 1M -j 3 --max-concurrent-downloads=3 --check-certificate=false -i links.txt";
+
+    document.getElementById("output").innerText = ps;
+}
+</script>
+
+</body>
+</html>
