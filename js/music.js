@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Run the visual crossfade — call this only when everything is ready
+    // Run the visual crossfade - call this only when everything is ready
     function crossfadeVisuals(info, newImg) {
         const artistEnc = encodeURIComponent(info.artist);
         const albumEnc = encodeURIComponent(info.album);
@@ -243,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // First click — fetch streaming link now
+        // First click - fetch streaming link now
         if (audioLoading) return;
         audioLoading = true;
         updatePlayBtnState();
@@ -347,7 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     next.load();
                 });
             }).then(([newImg, audioUrl]) => {
-                // Everything buffered — crossfade all at once
+                // Everything buffered - crossfade all at once
                 crossfadeVisuals(currentTrackInfo, newImg);
                 audioCrossfade(audioUrl);
             }).catch(err => {
@@ -360,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 updatePlayBtnState();
             });
         } else {
-            // Not playing — preload image, then crossfade visuals only
+            // Not playing - preload image, then crossfade visuals only
             container.classList.remove('skeleton');
             elPlayBtn.classList.add('visible');
 

@@ -71,7 +71,7 @@ const verses = [
   },
   {
     ref: "Ephesians 2:8-9",
-    text: "For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God—not by works, so that no one can boast.",
+    text: "For it is by grace you have been saved, through faith-and this is not from yourselves, it is the gift of God-not by works, so that no one can boast.",
     url: "https://www.biblegateway.com/passage/?search=Ephesians+2%3A8-9"
   },
   {

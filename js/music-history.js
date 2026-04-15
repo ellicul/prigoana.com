@@ -26,7 +26,7 @@ const btn = document.getElementById('music-history-btn');
 const mainEl = document.querySelector('.grid-layout main');
 
 // ── Tilt effect ──
-// Based on vanilla-tilt.js by Șandor Sergiu (MIT) — https://github.com/micku7zu/vanilla-tilt.js
+// Based on vanilla-tilt.js by Șandor Sergiu (MIT) - https://github.com/micku7zu/vanilla-tilt.js
 function applyTilt(el, maxTilt = 15) {
     if (!el) return;
     el.style.transformStyle = 'preserve-3d';
@@ -354,7 +354,7 @@ async function fetchPage(page) {
     }
 }
 
-// ── Shared polling — always runs, feeds both sidebar and scrobbles list ──
+// ── Shared polling - always runs, feeds both sidebar and scrobbles list ──
 
 async function poll() {
     try {
