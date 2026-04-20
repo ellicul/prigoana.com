@@ -28,6 +28,11 @@ function encode(value) {
   ).trim();
 }
 
+function extractCraigAndDaveSlug(url) {
+  const m = url.trim().match(/craigndave\.org\/videos\/([\w-]+)/);
+  return m ? m[1] : null;
+}
+
 function extractVideoId(url) {
   url = url.trim();
   const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -45,8 +50,57 @@ function escHtml(s) {
 }
 
 async function fetchSubtitles(id) {
-  const input   = id || document.getElementById("urlInput").value;
-  const btn     = document.getElementById("fetchBtn");
+  const input = id || document.getElementById("urlInput").value;
+  const btn   = document.getElementById("fetchBtn");
+
+  const craigSlug = extractCraigAndDaveSlug(input);
+  if (craigSlug) {
+    btn.disabled = true;
+    setStatus(`<div class="spinner">fetching craigndave video…</div>`);
+    let cdData;
+    try {
+      const res = await fetch(`/craigndave?slug=${encodeURIComponent(craigSlug)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      cdData = await res.json();
+    } catch (e) {
+      setStatus(`<div class="error">craigndave lookup failed: ${e.message}</div>`);
+      btn.disabled = false;
+      return;
+    }
+    if (!cdData.id) {
+      setStatus(`<div class="error">no youtube id found for that craigndave page</div>`);
+      btn.disabled = false;
+      return;
+    }
+    setStatus(`<div class="spinner">fetching subtitles…</div>`);
+    const token  = encode(cdData.id);
+    const apiUrl = "https://get-info.downsub.com/" + token;
+    let data;
+    try {
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json();
+    } catch (e) {
+      setStatus(`<div class="error">subtitle api error: ${e.message}</div>`);
+      btn.disabled = false;
+      return;
+    }
+    btn.disabled = false;
+    const all = [...(data.subtitles || []), ...(data.subtitlesAutoTrans || [])];
+    const en = all.find(s => /^en/i.test(s.language || s.name || ""));
+    const sub = en || all[0];
+    if (!sub) {
+      setStatus(`<div class="error">no subtitles found</div>`);
+      return;
+    }
+    let rawPath = "https://subtitle.downsub.com/raw/";
+    if (sub.url)     rawPath += sub.url + "/";
+    if (sub.urldual) rawPath += sub.urldual + "/";
+    window.open(rawPath, "_blank");
+    setStatus(`<div class="results"><div class="section-label">opened raw ${en ? "english" : "first available"} sub for ${escHtml(data.title || cdData.id)}</div></div>`);
+    return;
+  }
+
   const videoId = extractVideoId(input);
 
   if (!videoId) {
