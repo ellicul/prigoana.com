@@ -1,18 +1,16 @@
-export default {
-  async fetch(request, env, ctx) {
-    try {
-      const key = await extractAesKey();
-      return Response.json({ AES_KEY: key }, {
-        headers: { "Access-Control-Allow-Origin": "*" }
-      });
-    } catch (err) {
-      return Response.json(
-        { error: err.message },
-        { status: 500, headers: { "Access-Control-Allow-Origin": "*" } }
-      );
-    }
+export async function onRequest(context) {
+  try {
+    const key = await extractAesKey();
+    return Response.json({ AES_KEY: key }, {
+      headers: { "Access-Control-Allow-Origin": "*" }
+    });
+  } catch (err) {
+    return Response.json(
+      { error: err.message },
+      { status: 500, headers: { "Access-Control-Allow-Origin": "*" } }
+    );
   }
-};
+}
 
 async function extractAesKey() {
   const htmlRes = await fetch("https://downsub.com/", {
